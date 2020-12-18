@@ -2,36 +2,22 @@
 #include <core.p4>
 #include <v1model.p4>
 
-/*metadata*/
-const bit<9> HOST = 1;
-
 /* will be in udp header */
 const bit<16> TYPE_IPV6 = 0x86dd;
-const bit<8> TYPE_IPV6_2 = 41;
 const bit<16> TYPE_GTP = 2152;
-const bit<16> IS_UDP = 17;
 
 /* will be in ipv6 header*/
 const bit<8> TYPE_UDP = 17;
 const bit<8> TYPE_TCP = 6;
 const bit<8> TYPE_SRV6 = 43;
-const bit<32> teste = 32;
-
-/* lenght of the SIDs list */
-#define MAX_HOPS 4
-
-const bit<1> not_srv6 = 1;
-
-const bit<3> gtp_v1 = 1;
 
 const bit<4> type_ip6 = 6;
-
 const bit<8> pdu_container = 133;
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
 *************************************************************************/
 
-typedef bit<9>  egressSpec_t;
+typedef bit<16>  egressSpec_t;
 typedef bit<48> macAddr_t;
 typedef bit<128> ip6Addr_t;
 
@@ -112,16 +98,13 @@ header srv6_list_t {
     ip6Addr_t segment_id;
 }   
 
-
-struct metadata {
-    ip6Addr_t next_srv6_sid;
-}
-
 struct headers {
     ethernet_t   ethernet;
     ipv6_t       ipv6_outer;
     srv6_t       srv6;
-    srv6_list_t[MAX_HOPS]   srv6_list;
+    srv6_list_t   srv6_list0;
+    srv6_list_t   srv6_list1;
+    srv6_list_t   srv6_list2;
     udp_t        udp;
     gtp_t        gtp;
     gtp_ext_t    gtp_ext;
@@ -245,22 +228,6 @@ control MyIngress(inout headers hdr,
         mark_to_drop();
     }
 
-    action srv6_pop(ip6Addr_t dst) {
-        hdr.ipv6_outer.next_hdr = hdr.srv6.next_hdr;
-        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56;
-        hdr.ipv6_outer.dst_addr = dst;
-        /*hdr.srv6.setInvalid();*/
-        hdr.srv6_list[0].setInvalid();
-        hdr.srv6_list[1].setInvalid();
-        hdr.srv6_list[2].setInvalid();
-        
-        
-        hdr.udp.setValid();
-        hdr.ipv6_inner.setValid();
-        hdr.gtp.setValid();
-        hdr.gtp.spare = 1;
-    }
-
     action ipv6_forward(macAddr_t dstAddr, egressSpec_t port) {
         standard_metadata.egress_spec = port;
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
@@ -282,22 +249,22 @@ control MyIngress(inout headers hdr,
 
     action srv6_t_insert_2(ip6Addr_t s1, ip6Addr_t s2){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
-        hdr.srv6_list[0].setValid();
-        hdr.srv6_list[0].segment_id = s1;
-        hdr.srv6_list[1].setValid();
-        hdr.srv6_list[1].segment_id = s2;
+        hdr.srv6_list0.setValid();
+        hdr.srv6_list0.segment_id = s1;
+        hdr.srv6_list1.setValid();
+        hdr.srv6_list1.segment_id = s2;
         hdr.ipv6_outer.dst_addr = s2;
         build_srv6(2);
     }   
 
         action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
-        hdr.srv6_list[0].setValid();
-        hdr.srv6_list[0].segment_id = s1;
-        hdr.srv6_list[1].setValid();
-        hdr.srv6_list[1].segment_id = s2;
-        hdr.srv6_list[2].setValid();
-        hdr.srv6_list[2].segment_id = s3;
+        hdr.srv6_list0.setValid();
+        hdr.srv6_list0.segment_id = s1;
+        hdr.srv6_list1.setValid();
+        hdr.srv6_list1.segment_id = s2;
+        hdr.srv6_list2.setValid();
+        hdr.srv6_list2.segment_id = s3;
         hdr.ipv6_outer.dst_addr = s3;
         build_srv6(3);
     }
@@ -338,38 +305,13 @@ control MyIngress(inout headers hdr,
     }
 
 
-    table my_sid {
-        key = {
-            hdr.ipv6_outer.dst_addr: lpm;
-        }
-        actions = {
-            srv6_pop;
-        }
-        size = 1024;
-    }    
-
-
-
-/*
-    table ipv6_inner_lpm {
-        key = {
-            hdr.ipv6_inner.dst_addr: lpm;
-        }
-        actions = {
-            ipv6_forward;
-        }
-    }
-*/
 
     apply{
         
 
         if (!hdr.srv6.isValid() && hdr.gtp.spare == 0){
             teid_exact.apply();
-        } else if (hdr.srv6.isValid() && hdr.srv6.segment_left == 0){
-            my_sid.apply();
-            
-        }
+        } 
         ipv6_outer_lpm.apply();
     }
 
@@ -402,7 +344,9 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6);
-        packet.emit(hdr.srv6_list);
+        packet.emit(hdr.srv6_list0);
+        packet.emit(hdr.srv6_list1);
+        packet.emit(hdr.srv6_list2);
         packet.emit(hdr.udp);
         packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_sn);
