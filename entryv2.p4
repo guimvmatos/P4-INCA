@@ -98,6 +98,10 @@ header srv6_list_t {
     ip6Addr_t segment_id;
 }   
 
+struct metadata {
+    ip6Addr_t next_srv6_sid;
+}
+
 struct headers {
     ethernet_t   ethernet;
     ipv6_t       ipv6_outer;
@@ -121,6 +125,7 @@ struct headers {
 
 parser MyParser(packet_in packet,
                 out headers hdr,
+                inout metadata meta,
                 inout standard_metadata_t standard_metadata) {
 
     state start {
@@ -211,7 +216,7 @@ parser MyParser(packet_in packet,
 ************   C H E C K S U M    V E R I F I C A T I O N   *************
 *************************************************************************/
 
-control MyVerifyChecksum(inout headers hdr) {   
+control MyVerifyChecksum(inout headers hdr, inout metadata meta) {   
     apply {  }
 }
 
