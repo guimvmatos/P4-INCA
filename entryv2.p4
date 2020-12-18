@@ -106,9 +106,9 @@ struct headers {
     ethernet_t   ethernet;
     ipv6_t       ipv6_outer;
     srv6_t       srv6;
-    srv6_list_t   srv6_lista;
-    srv6_list_t   srv6_listb;
-    srv6_list_t   srv6_listc;
+    srv6_list_t  srv6_lista;
+    srv6_list_t  srv6_listb;
+    /*srv6_list_t  srv6_listc;*/
     udp_t        udp;
     gtp_t        gtp;
     gtp_ext_t    gtp_ext;
@@ -350,7 +350,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.srv6);
         packet.emit(hdr.srv6_lista);
         packet.emit(hdr.srv6_listb);
-        packet.emit(hdr.srv6_listc);
+        /*packet.emit(hdr.srv6_listc);*/
         packet.emit(hdr.udp);
         packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_ext);
