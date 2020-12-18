@@ -211,7 +211,7 @@ parser MyParser(packet_in packet,
 ************   C H E C K S U M    V E R I F I C A T I O N   *************
 *************************************************************************/
 
-control MyVerifyChecksum(inout headers hdr) {   
+control MyVerifyChecksum(inout headers hdr, inout metadata meta) {   
     apply {  }
 }
 
@@ -221,6 +221,7 @@ control MyVerifyChecksum(inout headers hdr) {
 *************************************************************************/
 
 control MyIngress(inout headers hdr,
+                  inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
     action drop() {
         mark_to_drop();
@@ -320,6 +321,7 @@ control MyIngress(inout headers hdr,
 *************************************************************************/
 
 control MyEgress(inout headers hdr,
+                 inout metadata meta,
                  inout standard_metadata_t standard_metadata) {
     apply {  }
 }
@@ -328,7 +330,7 @@ control MyEgress(inout headers hdr,
 *************   C H E C K S U M    C O M P U T A T I O N   **************
 *************************************************************************/
 
-control MyComputeChecksum(inout headers  hdr) {
+control MyComputeChecksum(inout headers  hdr, inout metadata meta) {
      apply { }
 }
 
@@ -346,8 +348,6 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.srv6_list2);
         packet.emit(hdr.udp);
         packet.emit(hdr.gtp);
-        packet.emit(hdr.gtp_sn);
-        packet.emit(hdr.gtp_npdu);
         packet.emit(hdr.gtp_ext);
         packet.emit(hdr.pdu_container);
         packet.emit(hdr.ipv6_inner);
