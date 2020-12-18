@@ -261,7 +261,7 @@ control MyIngress(inout headers hdr,
         build_srv6(2);
     }   
 
-        action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
+/*        action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
         hdr.srv6_lista.setValid();
         hdr.srv6_lista.segment_id = s1;
@@ -272,7 +272,7 @@ control MyIngress(inout headers hdr,
         hdr.ipv6_outer.dst_addr = s3;
         build_srv6(3);
     }
-
+*/
 
     
     table ipv6_outer_lpm {
