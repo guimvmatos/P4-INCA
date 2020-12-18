@@ -121,7 +121,6 @@ struct headers {
 
 parser MyParser(packet_in packet,
                 out headers hdr,
-                inout metadata meta,
                 inout standard_metadata_t standard_metadata) {
 
     state start {
@@ -212,7 +211,7 @@ parser MyParser(packet_in packet,
 ************   C H E C K S U M    V E R I F I C A T I O N   *************
 *************************************************************************/
 
-control MyVerifyChecksum(inout headers hdr, inout metadata meta) {   
+control MyVerifyChecksum(inout headers hdr) {   
     apply {  }
 }
 
@@ -222,7 +221,6 @@ control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
 *************************************************************************/
 
 control MyIngress(inout headers hdr,
-                  inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
     action drop() {
         mark_to_drop();
@@ -322,7 +320,6 @@ control MyIngress(inout headers hdr,
 *************************************************************************/
 
 control MyEgress(inout headers hdr,
-                 inout metadata meta,
                  inout standard_metadata_t standard_metadata) {
     apply {  }
 }
@@ -331,7 +328,7 @@ control MyEgress(inout headers hdr,
 *************   C H E C K S U M    C O M P U T A T I O N   **************
 *************************************************************************/
 
-control MyComputeChecksum(inout headers  hdr, inout metadata meta) {
+control MyComputeChecksum(inout headers  hdr) {
      apply { }
 }
 
