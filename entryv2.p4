@@ -253,10 +253,10 @@ control MyIngress(inout headers hdr,
 
     action srv6_t_insert_2(ip6Addr_t s1, ip6Addr_t s2){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
+        hdr.sr_list[0].setValid();
+        hdr.sr_list[0].segment_id = s1;
         hdr.sr_list[1].setValid();
-        hdr.sr_list[1].segment_id = s1;
-        hdr.sr_list[2].setValid();
-        hdr.sr_list[2].segment_id = s2;
+        hdr.sr_list[1].segment_id = s2;
         hdr.ipv6_outer.dst_addr = s2;
         build_srv6(2);
     }   
