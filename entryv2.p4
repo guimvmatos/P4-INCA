@@ -106,8 +106,8 @@ struct headers {
     ethernet_t   ethernet;
     ipv6_t       ipv6_outer;
     srv6_t       srv6;
-    /*srv6_list_t  srv6_lista;
-    srv6_list_t  srv6_listb;
+    srv6_list_t  srv6_lista;
+    /*srv6_list_t  srv6_listb;*/
     /*srv6_list_t  srv6_listc;*/
     udp_t        udp;
     gtp_t        gtp;
