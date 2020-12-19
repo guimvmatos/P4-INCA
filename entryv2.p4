@@ -14,7 +14,7 @@ const bit<8> TYPE_SRV6 = 43;
 const bit<4> type_ip6 = 6;
 const bit<8> pdu_container = 133;
 
-#define max_hops 2
+#define max_hops 3
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
 *************************************************************************/
@@ -261,18 +261,18 @@ control MyIngress(inout headers hdr,
         build_srv6(2);
     }   
 
-/*        action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
+        action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
-        hdr.srv6_lista.setValid();
-        hdr.srv6_lista.segment_id = s1;
-        hdr.srv6_listb.setValid();
-        hdr.srv6_listb.segment_id = s2;
-        hdr.srv6_listc.setValid();
-        hdr.srv6_listc.segment_id = s3;
+        hdr.sr_list[0].setValid();
+        hdr.sr_list[0].segment_id = s1;
+        hdr.sr_list[1].setValid();
+        hdr.sr_list[1].segment_id = s2;
+        hdr.sr_list[2].setValid();
+        hdr.sr_list[2].segment_id = s3;
         hdr.ipv6_outer.dst_addr = s3;
         build_srv6(3);
     }
-*/
+
 
     
     table ipv6_outer_lpm {
@@ -303,7 +303,7 @@ control MyIngress(inout headers hdr,
         }
         actions = {
             srv6_t_insert_2;
-            /*srv6_t_insert_3;*/
+            srv6_t_insert_3;
         }
         size = 1024;
     }
