@@ -14,7 +14,7 @@ const bit<8> TYPE_SRV6 = 43;
 const bit<4> type_ip6 = 6;
 const bit<8> pdu_container = 133;
 
-#define max_hops 4
+#define max_hops 2
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
 *************************************************************************/
@@ -96,7 +96,7 @@ header srv6_t {
     bit<16> tag;
 }
 
-header srlist_t {
+header srv6list_t {
     ip6Addr_t segment_id;
 }   
 
@@ -108,9 +108,7 @@ struct headers {
     ethernet_t   ethernet;
     ipv6_t       ipv6_outer;
     srv6_t       srv6;
-    srlist_t[max_hops]  sr_list;
-    /*srv6_list_t  srv6_listb;*/
-    /*srv6_list_t  srv6_listc;*/
+    srv6list_t[max_hops]  sr_list;
     udp_t        udp;
     gtp_t        gtp;
     gtp_ext_t    gtp_ext;
@@ -253,13 +251,13 @@ control MyIngress(inout headers hdr,
 
     }
 
-    action srv6_t_insert_2(/*ip6Addr_t s1, ip6Addr_t s2*/){
+    action srv6_t_insert_2(ip6Addr_t s1, ip6Addr_t s2){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
-        /*hdr.srv6_lista.setValid();*/
-        /*hdr.srv6_lista.segment_id = s1;*/
-        /*hdr.srv6_listb.setValid();*/
-        /*hdr.srv6_listb.segment_id = s2;*/
-        /*hdr.ipv6_outer.dst_addr = s2;*/
+        hdr.sr_list[1].setValid();
+        hdr.sr_list[1].segment_id = s1;
+        hdr.sr_list[2].setValid();
+        hdr.sr_list[2].segment_id = s2;
+        hdr.ipv6_outer.dst_addr = s2;
         build_srv6(2);
     }   
 
