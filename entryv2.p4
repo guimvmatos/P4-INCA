@@ -347,9 +347,12 @@ control MyDeparser(packet_out packet, in headers hdr) {
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
-
-        packet.emit(hdr.sr_list);
         packet.emit(hdr.srv6);
+
+        
+        packet.emit(hdr.sr_list);
+
+        
         packet.emit(hdr.udp);
         packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_ext);
