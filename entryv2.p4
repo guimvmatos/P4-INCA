@@ -37,8 +37,8 @@ header ipv6_t {
     bit<16> payload_len;
     bit<8> next_hdr;
     bit<8> hop_limit;
-    bit<48> src_addr;
-    bit<48> dst_addr;
+    bit<128> src_addr;
+    bit<128> dst_addr;
 }
 
 header gtp_t {
