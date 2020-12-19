@@ -21,7 +21,7 @@ const bit<8> pdu_container = 133;
 
 typedef bit<16>  egressSpec_t;
 typedef bit<48> macAddr_t;
-typedef bit<48> ip6Addr_t;
+typedef bit<128> ip6Addr_t;
 
 
 header ethernet_t {
@@ -347,7 +347,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
-        
+        packet.emit(hdr.srv6);
         packet.emit(hdr.sr_list);
         packet.emit(hdr.srv6);
         packet.emit(hdr.udp);
