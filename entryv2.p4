@@ -352,13 +352,12 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.srv6);
         packet.emit(hdr.udp);
         packet.emit(hdr.gtp);
-        packet.emit(hdr.sr_list);
         packet.emit(hdr.gtp_ext);
         packet.emit(hdr.pdu_container);
         packet.emit(hdr.ipv6_inner);
         packet.emit(hdr.tcp_inner);
         packet.emit(hdr.udp_inner);
-
+        packet.emit(hdr.sr_list);
     }
 }   
 
