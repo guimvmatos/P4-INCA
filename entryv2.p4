@@ -19,7 +19,7 @@ const bit<8> pdu_container = 133;
 
 typedef bit<16>  egressSpec_t;
 typedef bit<48> macAddr_t;
-typedef bit<128> ip6Addr_t;
+typedef bit<48> ip6Addr_t;
 
 
 header ethernet_t {
