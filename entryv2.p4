@@ -350,7 +350,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6);
-        packet.emit(hdr.sr_list);
+        
         /*packet.emit(hdr.srv6_listb);*/
         /*packet.emit(hdr.srv6_listc);*/
         packet.emit(hdr.udp);
@@ -360,6 +360,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ipv6_inner);
         packet.emit(hdr.tcp_inner);
         packet.emit(hdr.udp_inner);
+        packet.emit(hdr.sr_list);
         
 
     }
