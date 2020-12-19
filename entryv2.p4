@@ -108,7 +108,7 @@ struct headers {
     ethernet_t   ethernet;
     ipv6_t       ipv6_outer;
     srv6_t       srv6;
-    srv6list_t[max_hops]  sr_list;
+    srv6list_t[max_hops]  list;
     udp_t        udp;
     gtp_t        gtp;
     gtp_ext_t    gtp_ext;
@@ -253,22 +253,22 @@ control MyIngress(inout headers hdr,
 
     action srv6_t_insert_2(ip6Addr_t s1, ip6Addr_t s2){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
-        hdr.sr_list[0].setValid();
-        hdr.sr_list[0].segment_id = s1;
-        hdr.sr_list[1].setValid();
-        hdr.sr_list[1].segment_id = s2;
+        hdr.list[0].setValid();
+        hdr.list[0].segment_id = s1;
+        hdr.list[1].setValid();
+        hdr.list[1].segment_id = s2;
         hdr.ipv6_outer.dst_addr = s2;
         build_srv6(2);
     }   
 
         action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
-        hdr.sr_list[0].setValid();
-        hdr.sr_list[0].segment_id = s1;
-        hdr.sr_list[1].setValid();
-        hdr.sr_list[1].segment_id = s2;
-        hdr.sr_list[2].setValid();
-        hdr.sr_list[2].segment_id = s3;
+        hdr.list[0].setValid();
+        hdr.list[0].segment_id = s1;
+        hdr.list[1].setValid();
+        hdr.list[1].segment_id = s2;
+        hdr.list[2].setValid();
+        hdr.list[2].segment_id = s3;
         hdr.ipv6_outer.dst_addr = s3;
         build_srv6(3);
     }
@@ -349,8 +349,8 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6);
 
-        
-        packet.emit(hdr.sr_list);
+
+        packet.emit(hdr.list);
 
         
         packet.emit(hdr.udp);
