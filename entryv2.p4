@@ -257,7 +257,7 @@ control MyIngress(inout headers hdr,
         /*hdr.srv6_lista.segment_id = s1;*/
         /*hdr.srv6_listb.setValid();*/
         /*hdr.srv6_listb.segment_id = s2;*/
-        hdr.ipv6_outer.dst_addr = s2;
+        /*hdr.ipv6_outer.dst_addr = s2;*/
         build_srv6(2);
     }   
 
