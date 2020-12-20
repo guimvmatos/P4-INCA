@@ -124,7 +124,7 @@ struct headers {
 *************************************************************************/
 
 parser MyParser(packet_in packet,
-                out headers hdr,
+                inout headers hdr,
                 inout metadata meta,
                 inout standard_metadata_t standard_metadata) {
 
@@ -153,7 +153,7 @@ parser MyParser(packet_in packet,
     }
 
     state parse_srv6_list{
-        packet.extract(hdr.srv6_list.[0].segment_id);
+        packet.extract(hdr.srv6_list.last.segment_id);
         transition accept;
     }
 
