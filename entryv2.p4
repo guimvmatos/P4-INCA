@@ -149,11 +149,6 @@ parser MyParser(packet_in packet,
 
     state parse_srv6{
         packet.extract(hdr.srv6);
-        transition parse_srv6_list;
-    }
-
-    state parse_srv6_list{
-        packet.extract(hdr.srv6_list.last.segment_id);
         transition accept;
     }
 
@@ -353,7 +348,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6);
-        packet.emit(hdr.srv6_list[0]);        
+        packet.emit(hdr.srv6_list);        
         packet.emit(hdr.udp);
         packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_ext);
