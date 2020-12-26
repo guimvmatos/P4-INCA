@@ -274,7 +274,6 @@ control MyIngress(inout headers hdr,
     }
 
 
-    
     table ipv6_outer_lpm {
         key = {
             hdr.ipv6_outer.dst_addr: lpm;
@@ -348,7 +347,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6);
-        packet.emit(hdr.srv6_list);
+        packet.emit(hdr.srv6_list[0]);
         packet.emit(hdr.udp);
         packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_ext);
