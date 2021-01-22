@@ -144,6 +144,7 @@ parser MyParser(packet_in packet,
         transition select(hdr.ipv6_outer.next_hdr){
             TYPE_UDP: parse_udp;
             TYPE_SRV6: parse_srv6;
+            default: accept;
         }
     }
 
@@ -347,6 +348,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6);
+        packet.emit(hdr.srv6_list);
         packet.emit(hdr.udp);
         packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_ext);
@@ -354,7 +356,6 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ipv6_inner);
         packet.emit(hdr.tcp_inner);
         packet.emit(hdr.udp_inner);
-        packet.emit(hdr.srv6_list);
     }
 }   
 
