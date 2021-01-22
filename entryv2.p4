@@ -144,8 +144,8 @@ parser MyParser(packet_in packet,
         transition accept;/*select(hdr.ipv6_outer.next_hdr){
             TYPE_UDP: parse_udp;
             TYPE_SRV6: parse_srv6;
-            default: accept; */
-        }
+            default: accept; 
+        }*/
     }
 
     state parse_srv6{
