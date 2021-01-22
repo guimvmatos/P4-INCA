@@ -14,8 +14,8 @@ def main():
     iface = "vf0_0" 
 
     print "sending on interface %s" % (iface)
-    pkt =  Ether(src='00:15:4d:00:00:00', dst='00:15:4d:00:00:01')
-    pkt = pkt / IPv6(dst="fc00::2" , src="fc00::1") #/ UDP() #/ sys.argv[1]
+    pkt =  Ether(src='00:15:4d:00:00:00', dst='00:15:4d:00:00:03')
+    pkt = pkt / IPv6(dst="fc00::4" , src="fc00::1") #/ UDP() #/ sys.argv[1]
     pkt.show2()
     sendp(pkt, iface=iface, verbose=False)
 
