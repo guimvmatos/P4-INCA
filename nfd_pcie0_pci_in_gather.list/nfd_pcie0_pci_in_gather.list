@@ -55,7 +55,6 @@
 .%alloc_resource "..nv/me/blocks/blm/_h/blm_c.h" 878 BLM_NBI8_BLQ1_EMU_QID BLQ_EMU_RINGS global 0x1 0 0x1
 .%alloc_resource "..nv/me/blocks/blm/_h/blm_c.h" 879 BLM_NBI8_BLQ2_EMU_QID BLQ_EMU_RINGS global 0x1 0 0x2
 .%alloc_resource "..nv/me/blocks/blm/_h/blm_c.h" 880 BLM_NBI8_BLQ3_EMU_QID BLQ_EMU_RINGS global 0x1 0 0x3
-.%declare_resource "..brary/include/nfp_chipres.h" 110 emem0_queues global 0x400
 .%declare_resource "..brary/include/nfp_chipres.h" 121 emem1_queues global 0x400
 .%declare_resource "..brary/include/nfp_chipres.h" 162 cls_rings island 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 181 cls_apsignals island 0x10
@@ -140,7 +139,6 @@
 .%alloc_resource "..me/blocks/vnic/pci_in_me0.c" 46 nfd_init_done nfd_init_done_mem global 0x8 0x8
 .%declare_resource "..me/blocks/vnic/pci_in_me0.c" 48 nfd_cfg_base0_res global 0x200000 nfd_cfg_base0
 .%alloc_resource "..me/blocks/vnic/pci_in_me0.c" 48 _pf0_net_vf_bar nfd_cfg_base0_res global 0x200000 0
-.%declare_resource "..brary/include/nfp_chipres.h" 110 emem0_queues global 0x400
 .%declare_resource "..brary/include/nfp_chipres.h" 162 cls_rings island 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 366 pcie0_cpp2pcie_bars global 0x8
 .%declare_resource "..brary/include/nfp_chipres.h" 367 pcie0_dma_cfg_regs global 0x10
@@ -152,19 +150,19 @@
 .%declare_resource "..brary/include/nfp_chipres.h" 382 pcie1_topci_med global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 383 pcie1_topci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 384 pcie1_frompci_hi global 0x40
+.%declare_resource "..brary/include/nfp_chipres.h" 386 pcie1_frompci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 121 emem1_queues global 0x400
-.%declare_resource "..brary/include/nfp_chipres.h" 162 cls_rings island 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 181 cls_apsignals island 0x10
-.%declare_resource "..brary/include/nfp_chipres.h" 366 pcie0_cpp2pcie_bars global 0x8
-.%declare_resource "..brary/include/nfp_chipres.h" 367 pcie0_dma_cfg_regs global 0x10
+.%declare_resource "..brary/include/nfp_chipres.h" 197 cls_apfilters island 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 370 pcie0_topci_med global 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 373 pcie0_frompci_med global 0x40
+.%declare_resource "..brary/include/nfp_chipres.h" 371 pcie0_topci_lo global 0x80
+.%declare_resource "..brary/include/nfp_chipres.h" 374 pcie0_frompci_lo global 0x80
+.%declare_resource "..brary/include/nfp_chipres.h" 378 pcie1_cpp2pcie_bars global 0x8
 .%declare_resource "..brary/include/nfp_chipres.h" 379 pcie1_dma_cfg_regs global 0x10
-.%declare_resource "..brary/include/nfp_chipres.h" 381 pcie1_topci_hi global 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 383 pcie1_topci_lo global 0x80
-.%declare_resource "..brary/include/nfp_chipres.h" 384 pcie1_frompci_hi global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 385 pcie1_frompci_med global 0x40
 .%declare_resource "..nv/me/blocks/blm/_h/blm_c.h" 876 BLQ_EMU_RINGS global 0x4 0x4 emem0_queues
+.%alloc_resource "..nv/me/blocks/blm/_h/blm_c.h" 877 BLM_NBI8_BLQ0_EMU_QID BLQ_EMU_RINGS global 0x1 0
+.%alloc_resource "..nv/me/blocks/blm/_h/blm_c.h" 879 BLM_NBI8_BLQ2_EMU_QID BLQ_EMU_RINGS global 0x1 0 0x2
 .%alloc_resource "..nv/me/blocks/blm/_h/blm_c.h" 880 BLM_NBI8_BLQ3_EMU_QID BLQ_EMU_RINGS global 0x1 0 0x3
 
 .%bigendian

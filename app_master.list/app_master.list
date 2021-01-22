@@ -103,18 +103,19 @@
 .%declare_resource "..brary/include/nfp_chipres.h" 371 pcie0_topci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 372 pcie0_frompci_hi global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 373 pcie0_frompci_med global 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 374 pcie0_frompci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 378 pcie1_cpp2pcie_bars global 0x8
 .%declare_resource "..brary/include/nfp_chipres.h" 379 pcie1_dma_cfg_regs global 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 381 pcie1_topci_hi global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 383 pcie1_topci_lo global 0x80
+.%declare_resource "..brary/include/nfp_chipres.h" 384 pcie1_frompci_hi global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 385 pcie1_frompci_med global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 386 pcie1_frompci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 110 emem0_queues global 0x400
 .%declare_resource "..brary/include/nfp_chipres.h" 162 cls_rings island 0x10
-.%declare_resource "..brary/include/nfp_chipres.h" 197 cls_apfilters island 0x10
-.%declare_resource "..brary/include/nfp_chipres.h" 371 pcie0_topci_lo global 0x80
+.%declare_resource "..brary/include/nfp_chipres.h" 367 pcie0_dma_cfg_regs global 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 372 pcie0_frompci_hi global 0x40
+.%declare_resource "..brary/include/nfp_chipres.h" 378 pcie1_cpp2pcie_bars global 0x8
+.%declare_resource "..brary/include/nfp_chipres.h" 379 pcie1_dma_cfg_regs global 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 383 pcie1_topci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 385 pcie1_frompci_med global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 386 pcie1_frompci_lo global 0x80
@@ -572,25 +573,23 @@
 .%alloc_mem nfd_flr_atomic emem0 global 0x40 0x40 addr40
 .%declare_resource "..mon/src/app_master_common.c" 68 nfd_flr_atomic_mem global 0x40 nfd_flr_atomic
 .%alloc_resource "..mon/src/app_master_common.c" 68 nfd_flr_seen nfd_flr_atomic_mem global 0x40 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 110 emem0_queues global 0x400
 .%declare_resource "..brary/include/nfp_chipres.h" 121 emem1_queues global 0x400
-.%declare_resource "..brary/include/nfp_chipres.h" 181 cls_apsignals island 0x10
+.%declare_resource "..brary/include/nfp_chipres.h" 162 cls_rings island 0x10
+.%declare_resource "..brary/include/nfp_chipres.h" 197 cls_apfilters island 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 366 pcie0_cpp2pcie_bars global 0x8
 .%declare_resource "..brary/include/nfp_chipres.h" 369 pcie0_topci_hi global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 370 pcie0_topci_med global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 372 pcie0_frompci_hi global 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 373 pcie0_frompci_med global 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 374 pcie0_frompci_lo global 0x80
-.%declare_resource "..brary/include/nfp_chipres.h" 378 pcie1_cpp2pcie_bars global 0x8
-.%declare_resource "..brary/include/nfp_chipres.h" 379 pcie1_dma_cfg_regs global 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 381 pcie1_topci_hi global 0x40
+.%declare_resource "..brary/include/nfp_chipres.h" 383 pcie1_topci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 384 pcie1_frompci_hi global 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 385 pcie1_frompci_med global 0x40
+.%declare_resource "..brary/include/nfp_chipres.h" 386 pcie1_frompci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 110 emem0_queues global 0x400
 .%declare_resource "..brary/include/nfp_chipres.h" 121 emem1_queues global 0x400
 .%declare_resource "..brary/include/nfp_chipres.h" 162 cls_rings island 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 181 cls_apsignals island 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 367 pcie0_dma_cfg_regs global 0x10
+.%declare_resource "..brary/include/nfp_chipres.h" 370 pcie0_topci_med global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 371 pcie0_topci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 378 pcie1_cpp2pcie_bars global 0x8
 .%declare_resource "..brary/include/nfp_chipres.h" 379 pcie1_dma_cfg_regs global 0x10
@@ -615,20 +614,24 @@
 .%declare_resource "..brary/include/nfp_chipres.h" 367 pcie0_dma_cfg_regs global 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 370 pcie0_topci_med global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 372 pcie0_frompci_hi global 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 374 pcie0_frompci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 378 pcie1_cpp2pcie_bars global 0x8
 .%declare_resource "..brary/include/nfp_chipres.h" 382 pcie1_topci_med global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 385 pcie1_frompci_med global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 386 pcie1_frompci_lo global 0x80
+.%declare_resource "..brary/include/nfp_chipres.h" 110 emem0_queues global 0x400
+.%declare_resource "..brary/include/nfp_chipres.h" 121 emem1_queues global 0x400
+.%declare_resource "..brary/include/nfp_chipres.h" 162 cls_rings island 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 181 cls_apsignals island 0x10
+.%declare_resource "..brary/include/nfp_chipres.h" 197 cls_apfilters island 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 369 pcie0_topci_hi global 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 371 pcie0_topci_lo global 0x80
+.%declare_resource "..brary/include/nfp_chipres.h" 370 pcie0_topci_med global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 372 pcie0_frompci_hi global 0x40
 .%declare_resource "..brary/include/nfp_chipres.h" 373 pcie0_frompci_med global 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 374 pcie0_frompci_lo global 0x80
+.%declare_resource "..brary/include/nfp_chipres.h" 378 pcie1_cpp2pcie_bars global 0x8
+.%declare_resource "..brary/include/nfp_chipres.h" 379 pcie1_dma_cfg_regs global 0x10
 .%declare_resource "..brary/include/nfp_chipres.h" 383 pcie1_topci_lo global 0x80
 .%declare_resource "..brary/include/nfp_chipres.h" 384 pcie1_frompci_hi global 0x40
-.%declare_resource "..brary/include/nfp_chipres.h" 386 pcie1_frompci_lo global 0x80
+.%declare_resource "..brary/include/nfp_chipres.h" 385 pcie1_frompci_med global 0x40
 
 .%bigendian
 

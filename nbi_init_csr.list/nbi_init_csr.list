@@ -2,7 +2,7 @@
 +switches:  
 +nfas_version: 6.1.0.1-preview.3243
 +nfas_date: Oct  9 2018 17:02:52
-+current_date: Fri Jan 22 04:15:05 2021
++current_date: Fri Jan 22 04:29:01 2021
 
 .chip_id nfp-4xxxc-b0 0x10 0x10
 
