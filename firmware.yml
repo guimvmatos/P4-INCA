@@ -1,0 +1,450 @@
+##########################################
+# Header instance definitions            #
+##########################################
+
+errors:
+    type: enum
+    values:
+    -   NoError: 1
+    -   PacketTooShort: 2
+    -   NoMatch: 3
+    -   StackOutOfBounds: 4
+    -   HeaderTooShort: 5
+    -   ParserTimeout: 6
+
+ethernet:
+    fields:
+    -   dstAddr: 48
+    -   srcAddr: 48
+    -   etherType: 16
+    type: header
+
+gtp:
+    fields:
+    -   version_field_id: 3
+    -   proto_type_id: 1
+    -   spare: 1
+    -   extension_header_flag_id: 1
+    -   sequence_number_flag_id: 1
+    -   npdu_number_flag_id: 1
+    -   msgtype: 8
+    -   msglen: 16
+    -   teid: 32
+    type: header
+
+gtp_ext:
+    fields:
+    -   next_extension: 8
+    type: header
+
+ipv6_inner:
+    fields:
+    -   version: 4
+    -   traffic_class: 8
+    -   flow_label: 20
+    -   payload_len: 16
+    -   next_hdr: 8
+    -   hop_limit: 8
+    -   src_addr: 128
+    -   dst_addr: 128
+    type: header
+
+ipv6_outer:
+    fields:
+    -   version: 4
+    -   traffic_class: 8
+    -   flow_label: 20
+    -   payload_len: 16
+    -   next_hdr: 8
+    -   hop_limit: 8
+    -   src_addr: 128
+    -   dst_addr: 128
+    type: header
+
+pdu_container:
+    fields:
+    -   pdu_type: 4
+    -   spare: 5
+    -   rqi: 1
+    -   qosid: 6
+    -   padding: 8
+    type: header
+
+scalars:
+    fields:
+    -   metadata@next_srv6_sid: 128
+    type: metadata
+
+srv6:
+    fields:
+    -   next_hdr: 8
+    -   hdr_ext_len: 8
+    -   routing_type: 8
+    -   segment_left: 8
+    -   last_entry: 8
+    -   flags: 8
+    -   tag: 16
+    type: header
+
+srv6_list:
+    fields:
+    -   segment_id: 128
+    max_depth: 3
+    type: header
+
+standard_metadata:
+    fields:
+    -   ingress_port: 16
+    -   packet_length: 14
+    -   egress_spec: 16
+    -   egress_port: 16
+    -   egress_instance: 10
+    -   instance_type: 4
+    -   clone_spec: 32
+    -   parser_error_location: 8
+    -   parser_status: 3
+    -   checksum_error: 1
+    type: metadata
+
+tcp_inner:
+    fields:
+    -   srcPort: 16
+    -   dstPort: 16
+    -   seqNo: 32
+    -   ackNo: 32
+    -   dataOffset: 4
+    -   res: 3
+    -   ecn: 3
+    -   ctrl: 6
+    -   window: 16
+    -   checksum: 16
+    -   urgentPtr: 16
+    type: header
+
+udp:
+    fields:
+    -   sport: 16
+    -   dport: 16
+    -   len: 16
+    -   checksum: 16
+    type: header
+
+udp_inner:
+    fields:
+    -   sport: 16
+    -   dport: 16
+    -   len: 16
+    -   checksum: 16
+    type: header
+
+
+##########################################
+# Parse states                           #
+##########################################
+
+parse_gtp:
+    implementation: extract(gtp);
+    select_value:
+    - gtp.extension_header_flag_id
+    src_filename: entryv2.p4
+    src_lineno: 163
+    type: parse_state
+
+parse_gtp_ext:
+    implementation: extract(gtp_ext);
+    select_value:
+    - gtp_ext.next_extension
+    src_filename: entryv2.p4
+    src_lineno: 173
+    type: parse_state
+
+parse_ipv6_inner:
+    implementation: extract(ipv6_inner);
+    select_value:
+    - ipv6_inner.next_hdr
+    src_filename: entryv2.p4
+    src_lineno: 194
+    type: parse_state
+
+parse_ipv6_outer:
+    implementation: extract(ipv6_outer);
+    select_value:
+    - ipv6_outer.next_hdr
+    src_filename: entryv2.p4
+    src_lineno: 142
+    type: parse_state
+
+parse_pdu_container:
+    implementation: extract(pdu_container);
+    src_filename: entryv2.p4
+    src_lineno: 181
+    type: parse_state
+
+parse_srv6:
+    implementation: extract(srv6);
+    src_filename: entryv2.p4
+    src_lineno: 151
+    type: parse_state
+
+parse_tcp_inner:
+    implementation: extract(tcp_inner);
+    src_filename: entryv2.p4
+    src_lineno: 208
+    type: parse_state
+
+parse_udp:
+    implementation: extract(udp);
+    select_value:
+    - udp.dport
+    src_filename: entryv2.p4
+    src_lineno: 156
+    type: parse_state
+
+parse_udp_inner:
+    implementation: extract(udp_inner);
+    src_filename: entryv2.p4
+    src_lineno: 203
+    type: parse_state
+
+start:
+    implementation: extract(ethernet);
+    select_value:
+    - ethernet.etherType
+    src_filename: entryv2.p4
+    src_lineno: 131
+    type: parse_state
+
+
+##########################################
+# Parser                                 #
+##########################################
+
+parser:
+    format: dot
+    implementation: |-
+        digraph {
+            start -> parse_ipv6_outer [value="0x86dd", mask="none", order="0"]
+            parse_ipv6_outer -> parse_udp [value="0x11", mask="none", order="0"]
+            parse_ipv6_outer -> parse_srv6 [value="0x2b", mask="none", order="1"]
+            parse_ipv6_outer -> exit [value="default", mask="none", order="2"]
+            parse_udp -> parse_gtp [value="0x0868", mask="none", order="0"]
+            parse_gtp -> parse_gtp_ext [value="0x01", mask="none", order="0"]
+            parse_gtp -> parse_ipv6_inner [value="0x00", mask="none", order="1"]
+            parse_gtp_ext -> parse_pdu_container [value="0x85", mask="none", order="0"]
+            parse_pdu_container -> parse_ipv6_inner [value="default", mask="none", order="0"]
+            parse_ipv6_inner -> parse_udp_inner [value="0x11", mask="none", order="0"]
+            parse_ipv6_inner -> parse_tcp_inner [value="0x06", mask="none", order="1"]
+            parse_ipv6_inner -> exit [value="default", mask="none", order="2"]
+            parse_udp_inner -> exit [value="default", mask="none", order="0"]
+            parse_tcp_inner -> exit [value="default", mask="none", order="0"]
+            parse_srv6 -> exit [value="default", mask="none", order="0"]
+        }
+    start_state: start
+    type: parser
+
+
+##########################################
+# Action Expressions                     #
+##########################################
+
+_expression_srv6_t_insert_2_0:
+    expression: ((((ipv6_outer.payload_len) + (0x0028))) & (0xffff))
+    format: bracketed_expr
+    type: expression
+
+_expression_srv6_t_insert_3_0:
+    expression: ((((ipv6_outer.payload_len) + (0x0038))) & (0xffff))
+    format: bracketed_expr
+    type: expression
+
+
+##########################################
+# Action sets                            #
+##########################################
+
+ingress::drop:
+    implementation: drop();
+    src_filename: entryv2.p4
+    src_lineno: 232
+    type: action
+
+ingress::ipv6_forward:
+    implementation: |-
+        modify_field(standard_metadata.egress_spec, port);
+        modify_field(ethernet.srcAddr, ethernet.dstAddr);
+        modify_field(ethernet.dstAddr, dstAddr);
+    parameter_list:
+    -   dstAddr: 48
+    -   port: 16
+    src_filename: entryv2.p4
+    src_lineno: 236
+    type: action
+
+ingress::srv6_t_insert_2:
+    implementation: |-
+        modify_field(ipv6_outer.payload_len, _expression_srv6_t_insert_2_0);
+        add_header(srv6_list[0]);
+        modify_field(srv6_list[0].segment_id, s1);
+        add_header(srv6_list[1]);
+        modify_field(srv6_list[1].segment_id, s2);
+        modify_field(ipv6_outer.dst_addr, s2);
+        add_header(srv6);
+        modify_field(srv6.next_hdr, 0x11);
+        modify_field(srv6.hdr_ext_len, 0x04);
+        modify_field(srv6.routing_type, 0x04);
+        modify_field(srv6.segment_left, 0x01);
+        modify_field(srv6.last_entry, 0x01);
+        modify_field(srv6.flags, 0x00);
+        modify_field(srv6.tag, 0x0000);
+        modify_field(ipv6_outer.next_hdr, 0x2b);
+    parameter_list:
+    -   s1: 128
+    -   s2: 128
+    src_filename: entryv2.p4
+    src_lineno: 255
+    type: action
+
+ingress::srv6_t_insert_3:
+    implementation: |-
+        modify_field(ipv6_outer.payload_len, _expression_srv6_t_insert_3_0);
+        add_header(srv6_list[0]);
+        modify_field(srv6_list[0].segment_id, s1);
+        add_header(srv6_list[1]);
+        modify_field(srv6_list[1].segment_id, s2);
+        add_header(srv6_list[2]);
+        modify_field(srv6_list[2].segment_id, s3);
+        modify_field(ipv6_outer.dst_addr, s3);
+        add_header(srv6);
+        modify_field(srv6.next_hdr, 0x11);
+        modify_field(srv6.hdr_ext_len, 0x06);
+        modify_field(srv6.routing_type, 0x04);
+        modify_field(srv6.segment_left, 0x02);
+        modify_field(srv6.last_entry, 0x02);
+        modify_field(srv6.flags, 0x00);
+        modify_field(srv6.tag, 0x0000);
+        modify_field(ipv6_outer.next_hdr, 0x2b);
+    parameter_list:
+    -   s1: 128
+    -   s2: 128
+    -   s3: 128
+    src_filename: entryv2.p4
+    src_lineno: 265
+    type: action
+
+
+##########################################
+# Ingress and Egress tables              #
+##########################################
+
+ingress::ipv6_outer_lpm:
+    allowed_actions:
+    - ingress::ipv6_forward
+    - ingress::drop
+    default_entry:
+        action: ingress::drop
+        const: false
+    match_on:
+        ipv6_outer.dst_addr: lpm
+    max_entries: 1025
+    src_filename: entryv2.p4
+    src_lineno: 278
+    type: table
+
+ingress::teid_exact:
+    allowed_actions:
+    - ingress::srv6_t_insert_2
+    - ingress::srv6_t_insert_3
+    match_on:
+        gtp.teid: ternary
+        ipv6_inner.dst_addr: ternary
+        ipv6_inner.next_hdr: ternary
+        ipv6_inner.src_addr: ternary
+        pdu_container.qosid: ternary
+        tcp_inner.dstPort: ternary
+        tcp_inner.srcPort: ternary
+        udp_inner.dport: ternary
+        udp_inner.sport: ternary
+    max_entries: 1025
+    src_filename: entryv2.p4
+    src_lineno: 292
+    type: table
+
+
+##########################################
+# Ingress conditionals sets              #
+##########################################
+
+_condition_0:
+    condition: (((not((valid(srv6))))) and (((gtp.spare) == (0))))
+    format: bracketed_expr
+    src_filename: entryv2.p4
+    src_lineno: 316
+    type: conditional
+
+
+##########################################
+# Ingress control flow                   #
+##########################################
+
+ingress_flow:
+    doc: control flow for ingress
+    format: dot
+    implementation: |-
+        digraph {
+            "_condition_0" -> "ingress::ipv6_outer_lpm" [condition = false]
+            "_condition_0" -> "ingress::teid_exact" [condition = true]
+            "ingress::ipv6_outer_lpm" -> "exit_control_flow" [action = always]
+            "ingress::teid_exact" -> "ingress::ipv6_outer_lpm" [action = always]
+        }
+    start_state: _condition_0
+    type: control_flow
+
+
+##########################################
+# Deparsers                              #
+##########################################
+
+deparser:
+    order:
+    - ethernet
+    - ipv6_outer
+    - srv6
+    - udp
+    - gtp
+    - gtp_ext
+    - pdu_container
+    - ipv6_inner
+    - tcp_inner
+    - udp_inner
+    - srv6_list[0]
+    - srv6_list[1]
+    - srv6_list[2]
+    type: deparser
+
+
+##########################################
+# Processor layout                       #
+##########################################
+
+layout:
+    format: list
+    implementation:
+    - parser
+    - ingress
+    type: processor_layout
+
+
+##########################################
+# Source info                            #
+##########################################
+
+source_info:
+    date: 2021/01/22 04:15:04
+    output_file: ./firmware.yml
+    p4_version: '16'
+    source_files:
+    - /opt/netronome/p4/include/16/p4include/core.p4
+    - entryv2.p4
+    type: source_info
+
+

@@ -1,0 +1,1093 @@
+{
+    "generic": {
+        "tables_info": {
+            "ingress::ipv6_outer_lpm": {
+                "max_entries": 1025, 
+                "allowed_actions": [
+                    "ingress::ipv6_forward", 
+                    "ingress::drop"
+                ], 
+                "name": "ingress::ipv6_outer_lpm"
+            }, 
+            "ingress::teid_exact": {
+                "max_entries": 1025, 
+                "allowed_actions": [
+                    "ingress::srv6_t_insert_2", 
+                    "ingress::srv6_t_insert_3"
+                ], 
+                "name": "ingress::teid_exact"
+            }
+        }, 
+        "action_info": {
+            "ingress::ipv6_forward": {
+                "name": "ingress::ipv6_forward", 
+                "action_data": {
+                    "dstAddr": {
+                        "size": 48
+                    }, 
+                    "port": {
+                        "size": 16
+                    }, 
+                    "__pif_rule_no": {
+                        "size": 32
+                    }, 
+                    "__pif_table_no": {
+                        "size": 32
+                    }
+                }
+            }, 
+            "ingress::srv6_t_insert_2": {
+                "name": "ingress::srv6_t_insert_2", 
+                "action_data": {
+                    "s1": {
+                        "size": 128
+                    }, 
+                    "s2": {
+                        "size": 128
+                    }, 
+                    "__pif_rule_no": {
+                        "size": 32
+                    }, 
+                    "__pif_table_no": {
+                        "size": 32
+                    }
+                }
+            }, 
+            "ingress::srv6_t_insert_3": {
+                "name": "ingress::srv6_t_insert_3", 
+                "action_data": {
+                    "s1": {
+                        "size": 128
+                    }, 
+                    "s2": {
+                        "size": 128
+                    }, 
+                    "s3": {
+                        "size": 128
+                    }, 
+                    "__pif_rule_no": {
+                        "size": 32
+                    }, 
+                    "__pif_table_no": {
+                        "size": 32
+                    }
+                }
+            }, 
+            "ingress::drop": {
+                "name": "ingress::drop", 
+                "action_data": {
+                    "__pif_rule_no": {
+                        "size": 32
+                    }, 
+                    "__pif_table_no": {
+                        "size": 32
+                    }
+                }
+            }
+        }
+    }, 
+    "vendor": {
+        "register_info": {}, 
+        "backend_source_info": {
+            "date": "2021/01/22 04:15:05", 
+            "source_files": "./firmware.yml"
+        }, 
+        "counters_info": {}, 
+        "meter_info": {}, 
+        "frontend_source_info": {
+            "date": "2021/01/22 04:15:04", 
+            "source_files": [
+                "/opt/netronome/p4/include/16/p4include/core.p4", 
+                "entryv2.p4"
+            ]
+        }, 
+        "tables_info": {
+            "ingress::ipv6_outer_lpm": {
+                "name": "ingress::ipv6_outer_lpm", 
+                "constant_default": false, 
+                "matches": [
+                    {
+                        "field": "ipv6_outer.dst_addr", 
+                        "type": "lpm", 
+                        "class": "field", 
+                        "header_valid": {
+                            "header": "ipv6_outer", 
+                            "type": "header_valid", 
+                            "class": "header_valid", 
+                            "lm_layout": [
+                                {
+                                    "width": 1, 
+                                    "name": "ipv6_outer_valid", 
+                                    "value": 1, 
+                                    "lmbitoff": 27
+                                }
+                            ]
+                        }, 
+                        "lm_layout": [
+                            {
+                                "width": 32, 
+                                "fldbitoff": 96, 
+                                "name": "dst_addr", 
+                                "lmbitoff": 384
+                            }, 
+                            {
+                                "width": 32, 
+                                "fldbitoff": 64, 
+                                "name": "__dst_addr_1", 
+                                "lmbitoff": 416
+                            }, 
+                            {
+                                "width": 32, 
+                                "fldbitoff": 32, 
+                                "name": "__dst_addr_2", 
+                                "lmbitoff": 448
+                            }, 
+                            {
+                                "width": 32, 
+                                "fldbitoff": 0, 
+                                "name": "__dst_addr_3", 
+                                "lmbitoff": 480
+                            }
+                        ]
+                    }
+                ], 
+                "allowed_actions": [
+                    "ingress::ipv6_forward", 
+                    "ingress::drop"
+                ], 
+                "id": 0, 
+                "max_entries": 1025, 
+                "data_shift": 5, 
+                "rtsym": "_pif_actiondata_table_0_ingress__ipv6_outer_lpm", 
+                "default_entry": {
+                    "action": {
+                        "data": {}, 
+                        "type": "ingress::drop"
+                    }, 
+                    "name": "application_default"
+                }, 
+                "data_size": 32
+            }, 
+            "ingress::teid_exact": {
+                "name": "ingress::teid_exact", 
+                "constant_default": false, 
+                "matches": [
+                    {
+                        "field": "tcp_inner.dstPort", 
+                        "type": "ternary", 
+                        "class": "field", 
+                        "header_valid": {
+                            "header": "tcp_inner", 
+                            "type": "header_valid", 
+                            "class": "header_valid", 
+                            "lm_layout": [
+                                {
+                                    "width": 3, 
+                                    "name": "tcp_inner_valid", 
+                                    "value": 4, 
+                                    "lmbitoff": 7
+                                }
+                            ]
+                        }, 
+                        "lm_layout": [
+                            {
+                                "width": 16, 
+                                "fldbitoff": 0, 
+                                "name": "dstPort", 
+                                "lmbitoff": 1024
+                            }
+                        ]
+                    }, 
+                    {
+                        "field": "pdu_container.qosid", 
+                        "type": "ternary", 
+                        "class": "field", 
+                        "header_valid": {
+                            "header": "pdu_container", 
+                            "type": "header_valid", 
+                            "class": "header_valid", 
+                            "lm_layout": [
+                                {
+                                    "width": 1, 
+                                    "name": "pdu_container_valid", 
+                                    "value": 1, 
+                                    "lmbitoff": 15
+                                }
+                            ]
+                        }, 
+                        "lm_layout": [
+                            {
+                                "width": 6, 
+                                "fldbitoff": 0, 
+                                "name": "qosid", 
+                                "lmbitoff": 688
+                            }
+                        ]
+                    }, 
+                    {
+                        "field": "ipv6_inner.next_hdr", 
+                        "type": "ternary", 
+                        "class": "field", 
+                        "header_valid": {
+                            "header": "ipv6_inner", 
+                            "type": "header_valid", 
+                            "class": "header_valid", 
+                            "lm_layout": [
+                                {
+                                    "width": 1, 
+                                    "name": "ipv6_inner_valid", 
+                                    "value": 1, 
+                                    "lmbitoff": 12
+                                }
+                            ]
+                        }, 
+                        "lm_layout": [
+                            {
+                                "width": 8, 
+                                "fldbitoff": 0, 
+                                "name": "next_hdr", 
+                                "lmbitoff": 744
+                            }
+                        ]
+                    }, 
+                    {
+                        "field": "gtp.teid", 
+                        "type": "ternary", 
+                        "class": "field", 
+                        "header_valid": {
+                            "header": "gtp", 
+                            "type": "header_valid", 
+                            "class": "header_valid", 
+                            "lm_layout": [
+                                {
+                                    "width": 1, 
+                                    "name": "gtp_valid", 
+                                    "value": 1, 
+                                    "lmbitoff": 21
+                                }
+                            ]
+                        }, 
+                        "lm_layout": [
+                            {
+                                "width": 32, 
+                                "fldbitoff": 0, 
+                                "name": "teid", 
+                                "lmbitoff": 608
+                            }
+                        ]
+                    }, 
+                    {
+                        "field": "tcp_inner.srcPort", 
+                        "type": "ternary", 
+                        "class": "field", 
+                        "header_valid": {
+                            "header": "tcp_inner", 
+                            "type": "header_valid", 
+                            "class": "header_valid", 
+                            "lm_layout": [
+                                {
+                                    "width": 3, 
+                                    "name": "tcp_inner_valid", 
+                                    "value": 4, 
+                                    "lmbitoff": 7
+                                }
+                            ]
+                        }, 
+                        "lm_layout": [
+                            {
+                                "width": 16, 
+                                "fldbitoff": 0, 
+                                "name": "srcPort", 
+                                "lmbitoff": 1040
+                            }
+                        ]
+                    }, 
+                    {
+                        "field": "ipv6_inner.src_addr", 
+                        "type": "ternary", 
+                        "class": "field", 
+                        "header_valid": {
+                            "header": "ipv6_inner", 
+                            "type": "header_valid", 
+                            "class": "header_valid", 
+                            "lm_layout": [
+                                {
+                                    "width": 1, 
+                                    "name": "ipv6_inner_valid", 
+                                    "value": 1, 
+                                    "lmbitoff": 12
+                                }
+                            ]
+                        }, 
+                        "lm_layout": [
+                            {
+                                "width": 32, 
+                                "fldbitoff": 96, 
+                                "name": "src_addr", 
+                                "lmbitoff": 768
+                            }, 
+                            {
+                                "width": 32, 
+                                "fldbitoff": 64, 
+                                "name": "__src_addr_1", 
+                                "lmbitoff": 800
+                            }, 
+                            {
+                                "width": 32, 
+                                "fldbitoff": 32, 
+                                "name": "__src_addr_2", 
+                                "lmbitoff": 832
+                            }, 
+                            {
+                                "width": 32, 
+                                "fldbitoff": 0, 
+                                "name": "__src_addr_3", 
+                                "lmbitoff": 864
+                            }
+                        ]
+                    }, 
+                    {
+                        "field": "ipv6_inner.dst_addr", 
+                        "type": "ternary", 
+                        "class": "field", 
+                        "header_valid": {
+                            "header": "ipv6_inner", 
+                            "type": "header_valid", 
+                            "class": "header_valid", 
+                            "lm_layout": [
+                                {
+                                    "width": 1, 
+                                    "name": "ipv6_inner_valid", 
+                                    "value": 1, 
+                                    "lmbitoff": 12
+                                }
+                            ]
+                        }, 
+                        "lm_layout": [
+                            {
+                                "width": 32, 
+                                "fldbitoff": 96, 
+                                "name": "dst_addr", 
+                                "lmbitoff": 896
+                            }, 
+                            {
+                                "width": 32, 
+                                "fldbitoff": 64, 
+                                "name": "__dst_addr_1", 
+                                "lmbitoff": 928
+                            }, 
+                            {
+                                "width": 32, 
+                                "fldbitoff": 32, 
+                                "name": "__dst_addr_2", 
+                                "lmbitoff": 960
+                            }, 
+                            {
+                                "width": 32, 
+                                "fldbitoff": 0, 
+                                "name": "__dst_addr_3", 
+                                "lmbitoff": 992
+                            }
+                        ]
+                    }, 
+                    {
+                        "field": "udp_inner.dport", 
+                        "type": "ternary", 
+                        "class": "field", 
+                        "header_valid": {
+                            "header": "udp_inner", 
+                            "type": "header_valid", 
+                            "class": "header_valid", 
+                            "lm_layout": [
+                                {
+                                    "width": 3, 
+                                    "name": "udp_inner_valid", 
+                                    "value": 5, 
+                                    "lmbitoff": 7
+                                }
+                            ]
+                        }, 
+                        "lm_layout": [
+                            {
+                                "width": 16, 
+                                "fldbitoff": 0, 
+                                "name": "dport", 
+                                "lmbitoff": 1024
+                            }
+                        ]
+                    }, 
+                    {
+                        "field": "udp_inner.sport", 
+                        "type": "ternary", 
+                        "class": "field", 
+                        "header_valid": {
+                            "header": "udp_inner", 
+                            "type": "header_valid", 
+                            "class": "header_valid", 
+                            "lm_layout": [
+                                {
+                                    "width": 3, 
+                                    "name": "udp_inner_valid", 
+                                    "value": 5, 
+                                    "lmbitoff": 7
+                                }
+                            ]
+                        }, 
+                        "lm_layout": [
+                            {
+                                "width": 16, 
+                                "fldbitoff": 0, 
+                                "name": "sport", 
+                                "lmbitoff": 1040
+                            }
+                        ]
+                    }
+                ], 
+                "allowed_actions": [
+                    "ingress::srv6_t_insert_2", 
+                    "ingress::srv6_t_insert_3"
+                ], 
+                "id": 1, 
+                "max_entries": 1025, 
+                "data_shift": 6, 
+                "rtsym": "_pif_actiondata_table_1_ingress__teid_exact", 
+                "data_size": 64
+            }
+        }, 
+        "action_info": {
+            "ingress::ipv6_forward": {
+                "timeoutno_field": "", 
+                "name": "ingress::ipv6_forward", 
+                "action_data": {
+                    "dstAddr": {
+                        "size": 48
+                    }, 
+                    "port": {
+                        "size": 16
+                    }, 
+                    "__pif_rule_no": {
+                        "size": 32
+                    }, 
+                    "__pif_table_no": {
+                        "size": 32
+                    }
+                }, 
+                "ruleno_field": "__pif_rule_no", 
+                "action_data_packed": [
+                    {
+                        "actiondata": "dstAddr", 
+                        "name": "dstAddr_1", 
+                        "pad_cnt": 1, 
+                        "doc": "dstAddr[48:16]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 16
+                    }, 
+                    {
+                        "actiondata": "__pif_rule_no", 
+                        "name": "__pif_rule_no", 
+                        "pad_cnt": 1, 
+                        "doc": null, 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": false, 
+                        "size": 32
+                    }, 
+                    {
+                        "actiondata": "__pif_table_no", 
+                        "name": "__pif_table_no", 
+                        "pad_cnt": 1, 
+                        "doc": null, 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": false, 
+                        "size": 32
+                    }, 
+                    {
+                        "actiondata": "dstAddr", 
+                        "name": "dstAddr_0", 
+                        "pad_cnt": 1, 
+                        "doc": "dstAddr[16:0]", 
+                        "pad_szbytes": 2, 
+                        "pad_type": "uint16_t", 
+                        "split": true, 
+                        "size": 16, 
+                        "splitoff": 0
+                    }, 
+                    {
+                        "actiondata": "port", 
+                        "name": "port", 
+                        "pad_cnt": 1, 
+                        "doc": null, 
+                        "pad_szbytes": 2, 
+                        "pad_type": "uint16_t", 
+                        "split": false, 
+                        "size": 16
+                    }
+                ], 
+                "noeffect": false, 
+                "id": 0, 
+                "tableno_field": "__pif_table_no"
+            }, 
+            "ingress::srv6_t_insert_2": {
+                "timeoutno_field": "", 
+                "name": "ingress::srv6_t_insert_2", 
+                "action_data": {
+                    "s1": {
+                        "size": 128
+                    }, 
+                    "s2": {
+                        "size": 128
+                    }, 
+                    "__pif_rule_no": {
+                        "size": 32
+                    }, 
+                    "__pif_table_no": {
+                        "size": 32
+                    }
+                }, 
+                "ruleno_field": "__pif_rule_no", 
+                "action_data_packed": [
+                    {
+                        "actiondata": "s1", 
+                        "name": "s1_3", 
+                        "pad_cnt": 1, 
+                        "doc": "s1[128:96]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 96
+                    }, 
+                    {
+                        "actiondata": "s1", 
+                        "name": "s1_2", 
+                        "pad_cnt": 1, 
+                        "doc": "s1[96:64]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 64
+                    }, 
+                    {
+                        "actiondata": "s1", 
+                        "name": "s1_1", 
+                        "pad_cnt": 1, 
+                        "doc": "s1[64:32]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 32
+                    }, 
+                    {
+                        "actiondata": "s1", 
+                        "name": "s1_0", 
+                        "pad_cnt": 1, 
+                        "doc": "s1[32:0]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 0
+                    }, 
+                    {
+                        "actiondata": "s2", 
+                        "name": "s2_3", 
+                        "pad_cnt": 1, 
+                        "doc": "s2[128:96]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 96
+                    }, 
+                    {
+                        "actiondata": "s2", 
+                        "name": "s2_2", 
+                        "pad_cnt": 1, 
+                        "doc": "s2[96:64]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 64
+                    }, 
+                    {
+                        "actiondata": "s2", 
+                        "name": "s2_1", 
+                        "pad_cnt": 1, 
+                        "doc": "s2[64:32]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 32
+                    }, 
+                    {
+                        "actiondata": "s2", 
+                        "name": "s2_0", 
+                        "pad_cnt": 1, 
+                        "doc": "s2[32:0]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 0
+                    }, 
+                    {
+                        "actiondata": "__pif_rule_no", 
+                        "name": "__pif_rule_no", 
+                        "pad_cnt": 1, 
+                        "doc": null, 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": false, 
+                        "size": 32
+                    }, 
+                    {
+                        "actiondata": "__pif_table_no", 
+                        "name": "__pif_table_no", 
+                        "pad_cnt": 1, 
+                        "doc": null, 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": false, 
+                        "size": 32
+                    }
+                ], 
+                "noeffect": false, 
+                "id": 1, 
+                "tableno_field": "__pif_table_no"
+            }, 
+            "ingress::srv6_t_insert_3": {
+                "timeoutno_field": "", 
+                "name": "ingress::srv6_t_insert_3", 
+                "action_data": {
+                    "s1": {
+                        "size": 128
+                    }, 
+                    "s2": {
+                        "size": 128
+                    }, 
+                    "s3": {
+                        "size": 128
+                    }, 
+                    "__pif_rule_no": {
+                        "size": 32
+                    }, 
+                    "__pif_table_no": {
+                        "size": 32
+                    }
+                }, 
+                "ruleno_field": "__pif_rule_no", 
+                "action_data_packed": [
+                    {
+                        "actiondata": "s1", 
+                        "name": "s1_3", 
+                        "pad_cnt": 1, 
+                        "doc": "s1[128:96]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 96
+                    }, 
+                    {
+                        "actiondata": "s1", 
+                        "name": "s1_2", 
+                        "pad_cnt": 1, 
+                        "doc": "s1[96:64]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 64
+                    }, 
+                    {
+                        "actiondata": "s1", 
+                        "name": "s1_1", 
+                        "pad_cnt": 1, 
+                        "doc": "s1[64:32]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 32
+                    }, 
+                    {
+                        "actiondata": "s1", 
+                        "name": "s1_0", 
+                        "pad_cnt": 1, 
+                        "doc": "s1[32:0]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 0
+                    }, 
+                    {
+                        "actiondata": "s2", 
+                        "name": "s2_3", 
+                        "pad_cnt": 1, 
+                        "doc": "s2[128:96]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 96
+                    }, 
+                    {
+                        "actiondata": "s2", 
+                        "name": "s2_2", 
+                        "pad_cnt": 1, 
+                        "doc": "s2[96:64]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 64
+                    }, 
+                    {
+                        "actiondata": "s2", 
+                        "name": "s2_1", 
+                        "pad_cnt": 1, 
+                        "doc": "s2[64:32]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 32
+                    }, 
+                    {
+                        "actiondata": "s2", 
+                        "name": "s2_0", 
+                        "pad_cnt": 1, 
+                        "doc": "s2[32:0]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 0
+                    }, 
+                    {
+                        "actiondata": "s3", 
+                        "name": "s3_3", 
+                        "pad_cnt": 1, 
+                        "doc": "s3[128:96]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 96
+                    }, 
+                    {
+                        "actiondata": "s3", 
+                        "name": "s3_2", 
+                        "pad_cnt": 1, 
+                        "doc": "s3[96:64]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 64
+                    }, 
+                    {
+                        "actiondata": "s3", 
+                        "name": "s3_1", 
+                        "pad_cnt": 1, 
+                        "doc": "s3[64:32]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 32
+                    }, 
+                    {
+                        "actiondata": "s3", 
+                        "name": "s3_0", 
+                        "pad_cnt": 1, 
+                        "doc": "s3[32:0]", 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": true, 
+                        "size": 32, 
+                        "splitoff": 0
+                    }, 
+                    {
+                        "actiondata": "__pif_rule_no", 
+                        "name": "__pif_rule_no", 
+                        "pad_cnt": 1, 
+                        "doc": null, 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": false, 
+                        "size": 32
+                    }, 
+                    {
+                        "actiondata": "__pif_table_no", 
+                        "name": "__pif_table_no", 
+                        "pad_cnt": 1, 
+                        "doc": null, 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": false, 
+                        "size": 32
+                    }
+                ], 
+                "noeffect": false, 
+                "id": 2, 
+                "tableno_field": "__pif_table_no"
+            }, 
+            "ingress::drop": {
+                "timeoutno_field": "", 
+                "name": "ingress::drop", 
+                "action_data": {
+                    "__pif_rule_no": {
+                        "size": 32
+                    }, 
+                    "__pif_table_no": {
+                        "size": 32
+                    }
+                }, 
+                "ruleno_field": "__pif_rule_no", 
+                "action_data_packed": [
+                    {
+                        "actiondata": "__pif_rule_no", 
+                        "name": "__pif_rule_no", 
+                        "pad_cnt": 1, 
+                        "doc": null, 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": false, 
+                        "size": 32
+                    }, 
+                    {
+                        "actiondata": "__pif_table_no", 
+                        "name": "__pif_table_no", 
+                        "pad_cnt": 1, 
+                        "doc": null, 
+                        "pad_szbytes": 4, 
+                        "pad_type": "uint32_t", 
+                        "split": false, 
+                        "size": 32
+                    }
+                ], 
+                "noeffect": false, 
+                "id": 3, 
+                "tableno_field": "__pif_table_no"
+            }
+        }, 
+        "multicast": {
+            "table_rtsym": "_pif_mcast_table", 
+            "group_count": 16, 
+            "group_size": 16
+        }, 
+        "custom_errors": {
+            "NoError": 1, 
+            "PacketTooShort": 2, 
+            "NoMatch": 3, 
+            "StackOutOfBounds": 4, 
+            "HeaderTooShort": 5, 
+            "ParserTimeout": 6
+        }, 
+        "build_uuid": [
+            1666963992, 
+            2659320386, 
+            1550324203, 
+            1739564986
+        ], 
+        "digests_info": {}, 
+        "parser_value_set_info": {}
+    }, 
+    "p4info": {
+        "tables": [
+            {
+                "actionRefs": [
+                    {
+                        "id": 16817032
+                    }, 
+                    {
+                        "id": 16793508
+                    }, 
+                    {
+                        "id": 16800567
+                    }
+                ], 
+                "matchFields": [
+                    {
+                        "matchType": "LPM", 
+                        "bitwidth": 128, 
+                        "id": 1, 
+                        "name": "hdr.ipv6_outer.dst_addr"
+                    }
+                ], 
+                "preamble": {
+                    "alias": "ipv6_outer_lpm", 
+                    "id": 33582897, 
+                    "name": "ipv6_outer_lpm"
+                }, 
+                "size": "1024"
+            }, 
+            {
+                "actionRefs": [
+                    {
+                        "id": 16802952
+                    }, 
+                    {
+                        "id": 16817982
+                    }, 
+                    {
+                        "id": 16800567, 
+                        "annotations": [
+                            "@defaultonly()"
+                        ]
+                    }
+                ], 
+                "matchFields": [
+                    {
+                        "matchType": "TERNARY", 
+                        "bitwidth": 32, 
+                        "id": 1, 
+                        "name": "hdr.gtp.teid"
+                    }, 
+                    {
+                        "matchType": "TERNARY", 
+                        "bitwidth": 6, 
+                        "id": 2, 
+                        "name": "hdr.pdu_container.qosid"
+                    }, 
+                    {
+                        "matchType": "TERNARY", 
+                        "bitwidth": 128, 
+                        "id": 3, 
+                        "name": "hdr.ipv6_inner.dst_addr"
+                    }, 
+                    {
+                        "matchType": "TERNARY", 
+                        "bitwidth": 128, 
+                        "id": 4, 
+                        "name": "hdr.ipv6_inner.src_addr"
+                    }, 
+                    {
+                        "matchType": "TERNARY", 
+                        "bitwidth": 8, 
+                        "id": 5, 
+                        "name": "hdr.ipv6_inner.next_hdr"
+                    }, 
+                    {
+                        "matchType": "TERNARY", 
+                        "bitwidth": 16, 
+                        "id": 6, 
+                        "name": "hdr.tcp_inner.dstPort"
+                    }, 
+                    {
+                        "matchType": "TERNARY", 
+                        "bitwidth": 16, 
+                        "id": 7, 
+                        "name": "hdr.tcp_inner.srcPort"
+                    }, 
+                    {
+                        "matchType": "TERNARY", 
+                        "bitwidth": 16, 
+                        "id": 8, 
+                        "name": "hdr.udp_inner.dport"
+                    }, 
+                    {
+                        "matchType": "TERNARY", 
+                        "bitwidth": 16, 
+                        "id": 9, 
+                        "name": "hdr.udp_inner.sport"
+                    }
+                ], 
+                "preamble": {
+                    "alias": "teid_exact", 
+                    "id": 33609986, 
+                    "name": "teid_exact"
+                }, 
+                "size": "1024"
+            }
+        ], 
+        "actions": [
+            {
+                "preamble": {
+                    "alias": "NoAction", 
+                    "id": 16800567, 
+                    "name": "NoAction"
+                }
+            }, 
+            {
+                "preamble": {
+                    "alias": "drop", 
+                    "id": 16793508, 
+                    "name": "drop"
+                }
+            }, 
+            {
+                "params": [
+                    {
+                        "bitwidth": 48, 
+                        "id": 1, 
+                        "name": "dstAddr"
+                    }, 
+                    {
+                        "bitwidth": 16, 
+                        "id": 2, 
+                        "name": "port"
+                    }
+                ], 
+                "preamble": {
+                    "alias": "ipv6_forward", 
+                    "id": 16817032, 
+                    "name": "ipv6_forward"
+                }
+            }, 
+            {
+                "params": [
+                    {
+                        "bitwidth": 128, 
+                        "id": 1, 
+                        "name": "s1"
+                    }, 
+                    {
+                        "bitwidth": 128, 
+                        "id": 2, 
+                        "name": "s2"
+                    }
+                ], 
+                "preamble": {
+                    "alias": "srv6_t_insert_2", 
+                    "id": 16802952, 
+                    "name": "srv6_t_insert_2"
+                }
+            }, 
+            {
+                "params": [
+                    {
+                        "bitwidth": 128, 
+                        "id": 1, 
+                        "name": "s1"
+                    }, 
+                    {
+                        "bitwidth": 128, 
+                        "id": 2, 
+                        "name": "s2"
+                    }, 
+                    {
+                        "bitwidth": 128, 
+                        "id": 3, 
+                        "name": "s3"
+                    }
+                ], 
+                "preamble": {
+                    "alias": "srv6_t_insert_3", 
+                    "id": 16817982, 
+                    "name": "srv6_t_insert_3"
+                }
+            }
+        ]
+    }
+}

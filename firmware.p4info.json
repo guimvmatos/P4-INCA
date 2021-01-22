@@ -1,0 +1,187 @@
+{
+ "tables": [
+  {
+   "preamble": {
+    "id": 33582897,
+    "name": "ipv6_outer_lpm",
+    "alias": "ipv6_outer_lpm"
+   },
+   "matchFields": [
+    {
+     "id": 1,
+     "name": "hdr.ipv6_outer.dst_addr",
+     "bitwidth": 128,
+     "matchType": "LPM"
+    }
+   ],
+   "actionRefs": [
+    {
+     "id": 16817032
+    },
+    {
+     "id": 16793508
+    },
+    {
+     "id": 16800567
+    }
+   ],
+   "size": "1024"
+  },
+  {
+   "preamble": {
+    "id": 33609986,
+    "name": "teid_exact",
+    "alias": "teid_exact"
+   },
+   "matchFields": [
+    {
+     "id": 1,
+     "name": "hdr.gtp.teid",
+     "bitwidth": 32,
+     "matchType": "TERNARY"
+    },
+    {
+     "id": 2,
+     "name": "hdr.pdu_container.qosid",
+     "bitwidth": 6,
+     "matchType": "TERNARY"
+    },
+    {
+     "id": 3,
+     "name": "hdr.ipv6_inner.dst_addr",
+     "bitwidth": 128,
+     "matchType": "TERNARY"
+    },
+    {
+     "id": 4,
+     "name": "hdr.ipv6_inner.src_addr",
+     "bitwidth": 128,
+     "matchType": "TERNARY"
+    },
+    {
+     "id": 5,
+     "name": "hdr.ipv6_inner.next_hdr",
+     "bitwidth": 8,
+     "matchType": "TERNARY"
+    },
+    {
+     "id": 6,
+     "name": "hdr.tcp_inner.dstPort",
+     "bitwidth": 16,
+     "matchType": "TERNARY"
+    },
+    {
+     "id": 7,
+     "name": "hdr.tcp_inner.srcPort",
+     "bitwidth": 16,
+     "matchType": "TERNARY"
+    },
+    {
+     "id": 8,
+     "name": "hdr.udp_inner.dport",
+     "bitwidth": 16,
+     "matchType": "TERNARY"
+    },
+    {
+     "id": 9,
+     "name": "hdr.udp_inner.sport",
+     "bitwidth": 16,
+     "matchType": "TERNARY"
+    }
+   ],
+   "actionRefs": [
+    {
+     "id": 16802952
+    },
+    {
+     "id": 16817982
+    },
+    {
+     "id": 16800567,
+     "annotations": [
+      "@defaultonly()"
+     ]
+    }
+   ],
+   "size": "1024"
+  }
+ ],
+ "actions": [
+  {
+   "preamble": {
+    "id": 16800567,
+    "name": "NoAction",
+    "alias": "NoAction"
+   }
+  },
+  {
+   "preamble": {
+    "id": 16793508,
+    "name": "drop",
+    "alias": "drop"
+   }
+  },
+  {
+   "preamble": {
+    "id": 16817032,
+    "name": "ipv6_forward",
+    "alias": "ipv6_forward"
+   },
+   "params": [
+    {
+     "id": 1,
+     "name": "dstAddr",
+     "bitwidth": 48
+    },
+    {
+     "id": 2,
+     "name": "port",
+     "bitwidth": 16
+    }
+   ]
+  },
+  {
+   "preamble": {
+    "id": 16802952,
+    "name": "srv6_t_insert_2",
+    "alias": "srv6_t_insert_2"
+   },
+   "params": [
+    {
+     "id": 1,
+     "name": "s1",
+     "bitwidth": 128
+    },
+    {
+     "id": 2,
+     "name": "s2",
+     "bitwidth": 128
+    }
+   ]
+  },
+  {
+   "preamble": {
+    "id": 16817982,
+    "name": "srv6_t_insert_3",
+    "alias": "srv6_t_insert_3"
+   },
+   "params": [
+    {
+     "id": 1,
+     "name": "s1",
+     "bitwidth": 128
+    },
+    {
+     "id": 2,
+     "name": "s2",
+     "bitwidth": 128
+    },
+    {
+     "id": 3,
+     "name": "s3",
+     "bitwidth": 128
+    }
+   ]
+  }
+ ]
+}
