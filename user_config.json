@@ -1,6 +1,6 @@
 {
 "tables": {
-    "ingress::ipv4_lpm": {
+    "ingress::teid_exact": {
         "rules": [
         {
             "name": "to_vf0_0",
