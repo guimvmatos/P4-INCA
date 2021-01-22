@@ -141,10 +141,10 @@ parser MyParser(packet_in packet,
 
     state parse_ipv6_outer {
         packet.extract(hdr.ipv6_outer);
-        transition select(hdr.ipv6_outer.next_hdr){
+        transition accept;/*select(hdr.ipv6_outer.next_hdr){
             TYPE_UDP: parse_udp;
             TYPE_SRV6: parse_srv6;
-            default: accept;
+            default: accept; */
         }
     }
 
