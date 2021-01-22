@@ -5,9 +5,9 @@
         {
             "name": "to_vf0_0",
             "match": 
-                { "ipv6_outer.dst_addr" : { "value" : "fc00::1/128" } },
+                { "ipv4.dstAddr" : { "value" : "10.0.0.1/32" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "ingress::ipv4_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:00" 
@@ -21,9 +21,9 @@
         {
             "name": "to_vf0_1",
             "match": 
-                { "ipv6_outer.dst_addr": { "value": "fc00::2/128" } },
+                { "ipv4.dstAddr": { "value": "10.0.0.2/32" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "ingress::ipv4_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:01"
@@ -37,15 +37,15 @@
 	{
             "name": "to_p0",
             "match": 
-                { "ipv6_outer.dst_addr": { "value": "fc00::3/128" } },
+                { "ipv4.dstAddr": { "value": "10.0.0.3/32" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "ingress::ipv4_forward",
                 "data": {
                     "dstAddr": { 
-                        "value": "00:15:4d:00:00:02"
+                        "value": "ac:1f:6b:67:06:30"
 		    },
                     "port": { 
-                        "value": "v0.2" 
+                        "value": "p0" 
                     }
                 }
             }
@@ -53,15 +53,15 @@
 	{
             "name": "to_p1",
             "match": 
-                { "ipv6_outer.dst_addr": { "value": "fc00::4/128" } },
+                { "ipv4.dstAddr": { "value": "10.0.0.7/32" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "ingress::ipv4_forward",
                 "data": {
                     "dstAddr": { 
-                        "value": "00:15:4d:00:00:03"
+                        "value": "00:15:4d:00:00:02"
 		    },
                     "port": { 
-                        "value": "v0.3" 
+                        "value": "p1" 
                     }
                 }
             }
