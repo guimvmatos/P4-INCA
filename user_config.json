@@ -65,6 +65,22 @@
                     }
                 }
             }
+        },
+    {
+            "name": "to_p0",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc00::5" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "ac:1f:6b:67:06:40"
+		    },
+                    "port": { 
+                        "value": "p0" 
+                    }
+                }
+            }
         }
         ]
      }
