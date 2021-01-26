@@ -35,7 +35,7 @@
             }
         },
 	{
-            "name": "to_p0",
+            "name": "to_vf0_2",
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc00::3" } },
             "action": {
@@ -51,7 +51,7 @@
             }
         },
 	{
-            "name": "to_p1",
+            "name": "to_vf0_3",
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc00::4" } },
             "action": {
