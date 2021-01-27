@@ -268,7 +268,7 @@ control MyIngress(inout headers hdr,
         hdr.srv6_list_1.segment_id = s1;
         hdr.srv6_list_2.setValid();
         hdr.srv6_list_2.segment_id = s2;
-        hdr.ipv6_outer.dst_addr = s2;
+        /*hdr.ipv6_outer.dst_addr = s2;*/
         build_srv6(2);
     }   
 
@@ -287,7 +287,7 @@ control MyIngress(inout headers hdr,
         hdr.srv6_list_2.segment_id = s2;
         hdr.srv6_list_3.setValid();
         hdr.srv6_list_3.segment_id = s3;
-        hdr.ipv6_outer.dst_addr = s3;
+        /*hdr.ipv6_outer.dst_addr = s3;*/
         build_srv6(3);
     }
 
