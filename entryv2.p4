@@ -105,7 +105,7 @@ parser MyParser(packet_in packet,
 
     state parse_udp_outer {
         transition select (hdr.udp.dport){
-            TYPE_GTP: parse_gtp
+            TYPE_GTP: parse_gtp;
             default: accept;
         }
     }
