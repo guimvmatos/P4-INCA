@@ -34,6 +34,38 @@
                 }
             }
         },
+        {
+            "name": "to_vf0_1_srv6",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fcf0:12::100" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:01"
+		    },
+                    "port": { 
+                        "value": "v0.1" 
+                    }
+                }
+            }
+        },
+        {
+            "name": "to_vf0_2_srv6",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fcf0:23::6006" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:02"
+		    },
+                    "port": { 
+                        "value": "v0.2" 
+                    }
+                }
+            }
+        },
 	{
             "name": "to_vf0_2",
             "match": 
