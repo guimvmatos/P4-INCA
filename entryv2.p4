@@ -14,7 +14,7 @@ const bit<8> TYPE_SRV6 = 43;
 const bit<4> type_ip6 = 6;
 const bit<8> pdu_container = 133;
 
-#define max_hops 3
+#define max_hops 4
 /* by Guilherme Matos */
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
@@ -97,7 +97,7 @@ header srv6_t {
     bit<16> tag;
 }
 
-header srv6list_t {
+header srv6_list_t {
     ip6Addr_t segment_id;
 }   
 
@@ -109,7 +109,7 @@ struct headers {
     ethernet_t   ethernet;
     ipv6_t       ipv6_outer;
     srv6_t       srv6;
-    srv6list_t[max_hops]  srv6_list;
+    srv6_list_t[max_hops]  srv6_list;
     udp_t        udp;
     gtp_t        gtp;
     gtp_ext_t    gtp_ext;
