@@ -254,25 +254,25 @@ control MyIngress(inout headers hdr,
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
     }
 
-    action srv6_t_insert_2(/*ip6Addr_t s1, ip6Addr_t s2*/){
-        /*hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
+    action srv6_t_insert_2(ip6Addr_t s1, ip6Addr_t s2){
+        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
         hdr.srv6_list[0].setValid();
         hdr.srv6_list[0].segment_id = s1;
         hdr.srv6_list[1].setValid();
         hdr.srv6_list[1].segment_id = s2;
-        hdr.ipv6_outer.dst_addr = s2;*/
+        hdr.ipv6_outer.dst_addr = s2;
         build_srv6(2);
     }   
 
-        action srv6_t_insert_3(/*ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3*/){
-        /*hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
+        action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
+        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
         hdr.srv6_list[0].setValid();
         hdr.srv6_list[0].segment_id = s1;
         hdr.srv6_list[1].setValid();
         hdr.srv6_list[1].segment_id = s2;
         hdr.srv6_list[2].setValid();
         hdr.srv6_list[2].segment_id = s3;
-        hdr.ipv6_outer.dst_addr = s3;*/
+        hdr.ipv6_outer.dst_addr = s3;
         build_srv6(3);
     }
 
@@ -293,14 +293,14 @@ control MyIngress(inout headers hdr,
     table teid_exact{
         key = {
             hdr.gtp.teid: ternary;
-            /*hdr.pdu_container.qosid: ternary;
+            hdr.pdu_container.qosid: ternary;
             hdr.ipv6_inner.dst_addr: ternary;
             hdr.ipv6_inner.src_addr: ternary;
             hdr.ipv6_inner.next_hdr: ternary;
             hdr.tcp_inner.dstPort: ternary;
             hdr.tcp_inner.srcPort: ternary;
             hdr.udp_inner.dport: ternary;
-            hdr.udp_inner.sport: ternary;*/
+            hdr.udp_inner.sport: ternary;
         }
         actions = {
             srv6_t_insert_2;
