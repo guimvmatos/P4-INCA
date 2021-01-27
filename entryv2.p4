@@ -70,7 +70,7 @@ header gtp_t {
 }
 
 struct metadata {
-    
+    ip6Addr_t next_srv6_sid;
 }
 
 struct headers {
@@ -96,15 +96,18 @@ parser MyParser(packet_in packet,
     }
 
     state parse_ethernet {
-        transition select (hdr.ethernet.etherType){
+        packet.extract(hdr.ethernet);
+        transition select(hdr.ethernet.etherType) {
             TYPE_IPV6: parse_ipv6_outer;
         }
     }
 
     state parse_ipv6_outer {
-        transition select (hdr.ipv6_outer.next_hdr) {
+        packet.extract(hdr.ipv6_outer);
+        transition select(hdr.ipv6_outer.next_hdr){
             TYPE_UDP: parse_udp_outer;
             TYPE_TCP: parse_tcp_outer;
+            default: accept; 
         }
     }
 
