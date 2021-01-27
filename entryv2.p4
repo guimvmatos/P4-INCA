@@ -83,7 +83,7 @@ struct headers {
 *************************************************************************/
 
 parser MyParser(packet_in packet,
-                out header hdr,
+                out headers hdr,
                 inout standard_metadata_t standard_metadata) {
 
     state start {
