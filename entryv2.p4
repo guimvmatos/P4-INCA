@@ -242,7 +242,7 @@ control MyIngress(inout headers hdr,
         hdr.ethernet.dstAddr = dstAddr;
     }
  
-   /*action build_srv6(bit<8> num_segments) {
+    action build_srv6(bit<8> num_segments) {
         hdr.srv6_header.setValid();
         hdr.srv6_header.next_hdr = TYPE_UDP;
         hdr.srv6_header.hdr_ext_len =  num_segments * 2;
@@ -253,28 +253,27 @@ control MyIngress(inout headers hdr,
         hdr.srv6_header.tag = 0;
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
     }
-    */
 
-    action srv6_t_insert_2(ip6Addr_t s1, ip6Addr_t s2){
-        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
+    action srv6_t_insert_2(/*ip6Addr_t s1, ip6Addr_t s2*/){
+        /*hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
         hdr.srv6_list[0].setValid();
         hdr.srv6_list[0].segment_id = s1;
         hdr.srv6_list[1].setValid();
         hdr.srv6_list[1].segment_id = s2;
-        hdr.ipv6_outer.dst_addr = s2;
-        /*build_srv6(2);*/
+        hdr.ipv6_outer.dst_addr = s2;*/
+        build_srv6(2);
     }   
 
-        action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
-        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
+        action srv6_t_insert_3(/*ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3*/){
+        /*hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
         hdr.srv6_list[0].setValid();
         hdr.srv6_list[0].segment_id = s1;
         hdr.srv6_list[1].setValid();
         hdr.srv6_list[1].segment_id = s2;
         hdr.srv6_list[2].setValid();
         hdr.srv6_list[2].segment_id = s3;
-        hdr.ipv6_outer.dst_addr = s3;
-        /*build_srv6(3);*/
+        hdr.ipv6_outer.dst_addr = s3;*/
+        build_srv6(3);
     }
 
     table ipv6_outer_lpm {
@@ -294,20 +293,20 @@ control MyIngress(inout headers hdr,
     table teid_exact{
         key = {
             hdr.gtp.teid: ternary;
-            hdr.pdu_container.qosid: ternary;
+            /*hdr.pdu_container.qosid: ternary;
             hdr.ipv6_inner.dst_addr: ternary;
             hdr.ipv6_inner.src_addr: ternary;
             hdr.ipv6_inner.next_hdr: ternary;
             hdr.tcp_inner.dstPort: ternary;
             hdr.tcp_inner.srcPort: ternary;
             hdr.udp_inner.dport: ternary;
-            hdr.udp_inner.sport: ternary;
+            hdr.udp_inner.sport: ternary;*/
         }
         actions = {
             srv6_t_insert_2;
             srv6_t_insert_3;
         }
-        size = 1024;
+        /*size = 1024;*/
     }
 
     apply{
@@ -346,11 +345,9 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6_header);
-        
-        packet.emit(hdr.udp);
-        
-        packet.emit(hdr.gtp);
         packet.emit(hdr.srv6_list);
+        packet.emit(hdr.udp);
+        packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_ext);
         packet.emit(hdr.pdu_container);
         packet.emit(hdr.ipv6_inner);
