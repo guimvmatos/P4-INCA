@@ -115,27 +115,7 @@
             }
         }
         ]
-     },
-    "ingress::teid_exact": {
-        "rules": [
-        {
-            "name": "teid_32",
-            "match": 
-                { "gtp.teid" : { "value" : "32" } },
-            "action": {
-                "type": "ingress::srv6_t_insert_2",
-                "data": {
-                    "s1": { 
-                        "value": "fcf0:23::6006" 
-                    },
-                    "s2": { 
-                        "value": "fcf0:12::100" 
-                    }
-                }
-            }
-        }
-        ]
-    }
+     }
 }
 
 }
