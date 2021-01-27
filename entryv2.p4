@@ -231,6 +231,7 @@ control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
 control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
+
     action drop() {
         mark_to_drop();
     }
@@ -241,7 +242,7 @@ control MyIngress(inout headers hdr,
         hdr.ethernet.dstAddr = dstAddr;
     }
  
-   action build_srv6(bit<8> num_segments) {
+   /*action build_srv6(bit<8> num_segments) {
         hdr.srv6_header.setValid();
         hdr.srv6_header.next_hdr = TYPE_UDP;
         hdr.srv6_header.hdr_ext_len =  num_segments * 2;
@@ -251,8 +252,8 @@ control MyIngress(inout headers hdr,
         hdr.srv6_header.flags = 0;
         hdr.srv6_header.tag = 0;
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
-
     }
+    */
 
     action srv6_t_insert_2(ip6Addr_t s1, ip6Addr_t s2){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
@@ -261,7 +262,7 @@ control MyIngress(inout headers hdr,
         hdr.srv6_list[1].setValid();
         hdr.srv6_list[1].segment_id = s2;
         hdr.ipv6_outer.dst_addr = s2;
-        build_srv6(2);
+        /*build_srv6(2);*/
     }   
 
         action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
@@ -273,9 +274,8 @@ control MyIngress(inout headers hdr,
         hdr.srv6_list[2].setValid();
         hdr.srv6_list[2].segment_id = s3;
         hdr.ipv6_outer.dst_addr = s3;
-        build_srv6(3);
+        /*build_srv6(3);*/
     }
-
 
     table ipv6_outer_lpm {
         key = {
