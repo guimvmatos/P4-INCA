@@ -97,6 +97,10 @@ header srv6_t {
     bit<16> tag;
 }
 
+header test_t{
+    bit<1> test;
+}
+
 header srv6_list_t {
     ip6Addr_t segment_id;
 }   
@@ -110,6 +114,7 @@ struct headers {
     ipv6_t       ipv6_outer;
     srv6_t       srv6;
     /*srv6_list_t[max_hops]  srv6_list;*/
+    test_t       teste;
     srv6_list_t  srv6_list_1;
     srv6_list_t  srv6_list_2;
     srv6_list_t  srv6_list_3;
@@ -366,6 +371,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6);
         /*packet.emit(hdr.srv6_list);*/
+        packet.emit(hdr.teste);
         packet.emit(hdr.srv6_list_1);
         packet.emit(hdr.srv6_list_2);
         packet.emit(hdr.srv6_list_3);
