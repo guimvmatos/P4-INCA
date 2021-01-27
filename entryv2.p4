@@ -109,7 +109,10 @@ struct headers {
     ethernet_t   ethernet;
     ipv6_t       ipv6_outer;
     srv6_t       srv6;
-    srv6_list_t[max_hops]  srv6_list;
+    /*srv6_list_t[max_hops]  srv6_list;*/
+    srv6_list_t  srv6_list_1;
+    srv6_list_t  srv6_list_2;
+    srv6_list_t  srv6_list_3;
     udp_t        udp;
     gtp_t        gtp;
     gtp_ext_t    gtp_ext;
@@ -256,22 +259,34 @@ control MyIngress(inout headers hdr,
 
     action srv6_t_insert_2(ip6Addr_t s1, ip6Addr_t s2){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
+        /*
         hdr.srv6_list[0].setValid();
         hdr.srv6_list[0].segment_id = s1;
         hdr.srv6_list[1].setValid();
-        hdr.srv6_list[1].segment_id = s2;
+        hdr.srv6_list[1].segment_id = s2;*/
+        hdr.srv6_list_1.setValid();
+        hdr.srv6_list_1.segment_id = s1;
+        hdr.srv6_list_2.setValid();
+        hdr.srv6_list_2.segment_id = s2;
         hdr.ipv6_outer.dst_addr = s2;
         build_srv6(2);
     }   
 
         action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
+        /*
         hdr.srv6_list[0].setValid();
         hdr.srv6_list[0].segment_id = s1;
         hdr.srv6_list[1].setValid();
         hdr.srv6_list[1].segment_id = s2;
         hdr.srv6_list[2].setValid();
-        hdr.srv6_list[2].segment_id = s3;
+        hdr.srv6_list[2].segment_id = s3;*/
+        hdr.srv6_list_1.setValid();
+        hdr.srv6_list_1.segment_id = s1;
+        hdr.srv6_list_2.setValid();
+        hdr.srv6_list_2.segment_id = s2;
+        hdr.srv6_list_3.setValid();
+        hdr.srv6_list_3.segment_id = s3;
         hdr.ipv6_outer.dst_addr = s3;
         build_srv6(3);
     }
@@ -350,7 +365,10 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6);
-        packet.emit(hdr.srv6_list);
+        /*packet.emit(hdr.srv6_list);*/
+        packet.emit(hdr.srv6_list_1);
+        packet.emit(hdr.srv6_list_2);
+        packet.emit(hdr.srv6_list_3);
         packet.emit(hdr.udp);
         packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_ext);
