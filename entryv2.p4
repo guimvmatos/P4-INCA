@@ -257,22 +257,22 @@ control MyIngress(inout headers hdr,
 
     }
 
-    action srv6_t_insert_2(ip6Addr_t s1, ip6Addr_t s2){
+    action srv6_t_insert_2(/*ip6Addr_t s1, */ip6Addr_t s2){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
         /*
         hdr.srv6_list[0].setValid();
         hdr.srv6_list[0].segment_id = s1;
         hdr.srv6_list[1].setValid();
         hdr.srv6_list[1].segment_id = s2;
-        hdr.srv6_list_1.setValid();*/
-        hdr.srv6_list_1.segment_id = s1;
+        hdr.srv6_list_1.setValid();
+        hdr.srv6_list_1.segment_id = s1;*/
         hdr.srv6_list_2.setValid();
         hdr.srv6_list_2.segment_id = s2;
         /*hdr.ipv6_outer.dst_addr = s2;*/
         build_srv6(2);
     }   
 
-        action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
+        action srv6_t_insert_3(/*ip6Addr_t s1, */ip6Addr_t s2,  ip6Addr_t s3){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
         /*
         hdr.srv6_list[0].setValid();
@@ -281,8 +281,8 @@ control MyIngress(inout headers hdr,
         hdr.srv6_list[1].segment_id = s2;
         hdr.srv6_list[2].setValid();
         hdr.srv6_list[2].segment_id = s3;
-        hdr.srv6_list_1.setValid();*/
-        hdr.srv6_list_1.segment_id = s1;
+        hdr.srv6_list_1.setValid();
+        hdr.srv6_list_1.segment_id = s1;*/
         hdr.srv6_list_2.setValid();
         hdr.srv6_list_2.segment_id = s2;
         hdr.srv6_list_3.setValid();
