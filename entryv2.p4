@@ -151,7 +151,7 @@ control MyIngress (inout headers hdr,
             hdr.ipv6_outer.dst_addr:lpm;
         }
 
-        action = {
+        actions = {
             ipv6_forward;
             drop;
             NoAction;
