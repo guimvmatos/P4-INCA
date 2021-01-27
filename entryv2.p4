@@ -112,6 +112,7 @@ parser MyParser(packet_in packet,
     }
 
     state parse_udp_outer {
+        packet.extract(hdr.udp);
         transition select (hdr.udp.dport){
             TYPE_GTP: parse_gtp;
             default: accept;
@@ -119,10 +120,12 @@ parser MyParser(packet_in packet,
     }
 
     state parse_tcp_outer {
+        packet.extract(hdr.tcp);
         transition accept;
     }
 
     state parse_gtp {
+        packet.extract(hdr.gtp);
         transition accept;
     }
 }
