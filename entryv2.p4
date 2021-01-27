@@ -263,8 +263,8 @@ control MyIngress(inout headers hdr,
         hdr.srv6_list[0].setValid();
         hdr.srv6_list[0].segment_id = s1;
         hdr.srv6_list[1].setValid();
-        hdr.srv6_list[1].segment_id = s2;*/
-        hdr.srv6_list_1.setValid();
+        hdr.srv6_list[1].segment_id = s2;
+        hdr.srv6_list_1.setValid();*/
         hdr.srv6_list_1.segment_id = s1;
         hdr.srv6_list_2.setValid();
         hdr.srv6_list_2.segment_id = s2;
@@ -280,8 +280,8 @@ control MyIngress(inout headers hdr,
         hdr.srv6_list[1].setValid();
         hdr.srv6_list[1].segment_id = s2;
         hdr.srv6_list[2].setValid();
-        hdr.srv6_list[2].segment_id = s3;*/
-        hdr.srv6_list_1.setValid();
+        hdr.srv6_list[2].segment_id = s3;
+        hdr.srv6_list_1.setValid();*/
         hdr.srv6_list_1.segment_id = s1;
         hdr.srv6_list_2.setValid();
         hdr.srv6_list_2.segment_id = s2;
