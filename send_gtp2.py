@@ -22,11 +22,9 @@ def main():
     iface = "vf0_0" 
 
     print "sending on interface %s" % (iface)
-    pkt =  Ether(src='00:15:4d:00:00:00', dst='00:15:4d:00:00:01') / IPv6(src="fc00::1", dst="fc00::2") / UDP (sport=64515, dport=2152 ) / GTP_U_Header(TEID=32, Reserved=0)/ IPv6(src="fc00::3", dst="fc00::4") / TCP(dport=81) / sys.argv[1]
+    pkt =  Ether(src='00:15:5d:00:00:01', dst='00:15:5d:00:00:01') / IPv6(src="fc00::1", dst="fc00::2") / UDP (sport=64515, dport=2152 ) / GTP_U_Header(TEID=32, Reserved=0, E=1) / dl_pdu_session(gtp_ext=133,QoSID=14) / IPv6(src="fc00::1", dst="fc00::2") / UDP(dport=80,sport=35000) / sys.argv[1]
     pkt.show2()
-
-
-
+    pkt.summary()
     sendp(pkt, iface=iface, verbose=False)
 
 
