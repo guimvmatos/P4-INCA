@@ -69,6 +69,10 @@ header gtp_t {
     bit<32> teid;
 }
 
+struct metadata {
+    
+}
+
 struct headers {
     ethernet_t              ethernet;
     ipv6_t                  ipv6_outer;
@@ -84,6 +88,7 @@ struct headers {
 
 parser MyParser(packet_in packet,
                 out headers hdr,
+                inout metadata meta,
                 inout standard_metadata_t standard_metadata) {
 
     state start {
@@ -124,7 +129,7 @@ parser MyParser(packet_in packet,
 *************************************************************************/
 
 control MyVerifyChecksum(inout headers hdr, 
-                         inout standard_metadata_t standard_metadata) {   
+                         inout metadata meta) {   
     apply {  }
 }
 
@@ -134,6 +139,7 @@ control MyVerifyChecksum(inout headers hdr,
 *************************************************************************/
 
 control MyIngress (inout headers hdr,
+                   inout metadata meta,
                    inout standard_metadata_t standard_metadata) {
 
     action drop() {
@@ -170,6 +176,7 @@ control MyIngress (inout headers hdr,
 *************************************************************************/
 
 control MyEgress(inout headers hdr,
+                 inout metadata meta,
                  inout standard_metadata_t standard_metadata) {
     apply {  }
 }
@@ -179,7 +186,7 @@ control MyEgress(inout headers hdr,
 *************************************************************************/
 
 control MyComputeChecksum (inout headers hdr, 
-                           inout standard_metadata_t standard_metadata) {
+                           inout metadata meta) {
      apply { }
 }
 
