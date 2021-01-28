@@ -113,7 +113,7 @@ struct headers {
     pdu_container_t         pdu_container;
     ipv6_outer              ipv6_inner;
     udp_t                   udp_inner;
-    tdp_t                   tdp_inner;                   
+    tcp_t                   tcp_inner;                   
 }
 
 
@@ -248,9 +248,16 @@ control MyDeparser (packet_out packet,
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
+        packet.emit(hdr.srv6);
+        packet.emit(hdr.srv6_list);
         packet.emit(hdr.udp);
         packet.emit(hdr.tcp);
         packet.emit(hdr.gtp);
+        packet.emit(hdr.gtp_ext);
+        packet.emit(hdr.pdu_container);
+        packet.emit(hdr.ipv6_inner);
+        packet.emit(hdr.udp_inner);
+        packet.emit(hdr.tcp_inner);
     }
 }
 
