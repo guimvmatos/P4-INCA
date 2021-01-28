@@ -28,13 +28,13 @@ header ethernet_t {
 }
 
 header ipv6_t {
-  /*  bit<4> version;
+    bit<4> version;
     bit<8> traffic_class;
     bit<20> flow_label;
     bit<16> payload_len;
     bit<8> next_hdr;
     bit<8> hop_limit;
-    ip6Addr_t src_addr;*/
+    ip6Addr_t src_addr;
     ip6Addr_t dst_addr;
 }
 
@@ -46,11 +46,12 @@ header srv6_t {
     bit<8> last_entry;
     bit<8> flags;
     bit<16> tag;
+    ip6Addr_t[max_hops] segment_id;
 }
 
-header srv6_list_t {
+/*header srv6_list_t {
     bit<128> segment_id;
-}
+}*/
 
 header udp_t {
     bit<16> sport;
@@ -105,7 +106,6 @@ struct headers {
     ethernet_t              ethernet;
     ipv6_t                  ipv6_outer;
     srv6_t                  srv6;
-    srv6_list_t             srv6_list;
     udp_t                   udp;
     tcp_t                   tcp;
     gtp_t                   gtp;
@@ -247,7 +247,6 @@ control MyDeparser (packet_out packet,
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6);
-        packet.emit(hdr.srv6_list);
         packet.emit(hdr.udp);
         packet.emit(hdr.tcp);
         packet.emit(hdr.gtp);
