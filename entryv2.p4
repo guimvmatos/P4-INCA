@@ -157,7 +157,7 @@ parser MyParser(packet_in packet,
     }
 
     state parse_srv6_list {
-        packet.extract(hdr.srv6_list);
+        packet.extract(hdr.srv6_list[0]);
         transition accept;
     }
 
