@@ -310,7 +310,7 @@ control MyIngress(inout headers hdr,
         }
         actions = {
             srv6_t_insert_2;
-            srv6_t_insert_3;
+            /*srv6_t_insert_3;*/
         }
         /*size = 1024;*/
     }
