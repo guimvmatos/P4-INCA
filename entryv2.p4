@@ -46,7 +46,7 @@ header srv6_t {
     bit<8> last_entry;
     bit<8> flags;
     bit<16> tag;
-    ip6Addr_t[max_hops] segment_id;
+    ip6Addr_t[3] segment_id;
 }
 
 /*header srv6_list_t {
