@@ -165,10 +165,6 @@ parser MyParser(packet_in packet,
         transition accept;
     }
 
-    state parse_srv6_list {
-        extract()
-    }
-
     state parse_gtp {
         packet.extract(hdr.gtp);
         transition accept;
