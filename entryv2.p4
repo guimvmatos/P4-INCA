@@ -163,7 +163,6 @@ parser MyParser(packet_in packet,
     state parse_srv6 {
         packet.extract(hdr.srv6);
         transition accept;
-        }
     }
 
     state parse_gtp {
