@@ -105,7 +105,7 @@ struct headers {
     ethernet_t              ethernet;
     ipv6_t                  ipv6_outer;
     srv6_t                  srv6;
-    srv6_list_t[2]          srv6_list;
+    srv6_list_t         srv6_list;
     udp_t                   udp;
     tcp_t                   tcp;
     gtp_t                   gtp;
@@ -163,6 +163,10 @@ parser MyParser(packet_in packet,
     state parse_srv6 {
         packet.extract(hdr.srv6);
         transition accept;
+    }
+
+    state parse_srv6_list {
+        extract()
     }
 
     state parse_gtp {
