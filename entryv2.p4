@@ -99,7 +99,7 @@ header srv6_t {
 
 header srv6_list_t {
     ip6Addr_t segment_id;
-}   
+}
 
 struct metadata {
     ip6Addr_t next_srv6_sid;
@@ -109,7 +109,8 @@ struct headers {
     ethernet_t   ethernet;
     ipv6_t       ipv6_outer;
     srv6_t       srv6_header;
-    srv6_list_t  srv6_list;
+    srv6_list_t  srv6_list1;
+    srv6_list_t  srv6_list2;
     udp_t        udp;
     gtp_t        gtp;
     gtp_ext_t    gtp_ext;
@@ -256,14 +257,19 @@ control MyIngress(inout headers hdr,
 
     action srv6_t_insert_2(ip6Addr_t s1, ip6Addr_t s2){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 40;
-        hdr.srv6_list[0].setValid();
+        /*hdr.srv6_list[0].setValid();
         hdr.srv6_list[0].segment_id = s1;
         hdr.srv6_list[1].setValid();
         hdr.srv6_list[1].segment_id = s2;
+        => colocar srv6_list1 e srv6_list2 no lugar do array*/
+        hdr.srv6_list1.setValid();
+        hdr.srv6_list1.segment_id = s1;
+        hdr.srv6_list2.setValid();
+        hdr.srv6_list2.segment_id = s1;
         hdr.ipv6_outer.dst_addr = s2;
         build_srv6(2);
     }   
-
+/*
         action srv6_t_insert_3(ip6Addr_t s1, ip6Addr_t s2,  ip6Addr_t s3){
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
         hdr.srv6_list[0].setValid();
@@ -275,7 +281,7 @@ control MyIngress(inout headers hdr,
         hdr.ipv6_outer.dst_addr = s3;
         build_srv6(3);
     }
-
+*/
     table ipv6_outer_lpm {
         key = {
             hdr.ipv6_outer.dst_addr: exact;
@@ -345,8 +351,8 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv6_header);
-        packet.emit(hdr.srv6_list[0]);
-        packet.emit(hdr.srv6_list[1]);
+        packet.emit(hdr.srv6_list1);
+        packet.emit(hdr.srv6_list2);
         packet.emit(hdr.udp);
         packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_ext);
