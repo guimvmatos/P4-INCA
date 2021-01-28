@@ -160,7 +160,7 @@ control MyIngress (inout headers hdr,
 
     table ipv6_outer_lpm {
         key = {
-            hdr.ipv6_outer.dst_addr:lpm;
+            hdr.ipv6_outer.dst_addr:exact;
         }
 
         actions = {
