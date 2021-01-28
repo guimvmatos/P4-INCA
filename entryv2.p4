@@ -111,7 +111,7 @@ struct headers {
     gtp_t                   gtp;
     gtp_ext_t               gtp_ext;
     pdu_container_t         pdu_container;
-    ipv6_outer              ipv6_inner;
+    ipv6_t                  ipv6_inner;
     udp_t                   udp_inner;
     tcp_t                   tcp_inner;                   
 }
