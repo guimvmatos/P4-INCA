@@ -11,7 +11,7 @@ const bit<8> TYPE_UDP = 17;
 const bit<8> TYPE_TCP = 6;
 const bit<8> TYPE_SRV6 = 43;
 
-#define max_hops 4;
+#define max_hops 4
 
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
