@@ -47,10 +47,10 @@ header srv6_t {
     bit<8> flags;
     bit<16> tag;
 }
-/*
+
 header srv6_list_t {
-    ip6Addr_t segment_id;
-}*/
+    bit<128> segment_id;
+}
 
 header udp_t {
     bit<16> sport;
@@ -98,14 +98,14 @@ header pdu_container_t {
 }
 
 struct metadata {
-    ip6Addr_t next_srv6_sid;
+    bit<1> anything;
 }
 
 struct headers {
     ethernet_t              ethernet;
     ipv6_t                  ipv6_outer;
     srv6_t                  srv6;
-    ip6Addr_t               srv6_list;
+    srv6_list_t             srv6_list;
     udp_t                   udp;
     tcp_t                   tcp;
     gtp_t                   gtp;
