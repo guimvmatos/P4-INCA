@@ -164,7 +164,6 @@ parser MyParser(packet_in packet,
         packet.extract(hdr.srv6);
         transition accept;
         }
-        }
     }
 
     state parse_gtp {
