@@ -267,7 +267,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.dst_addr = s2;
     }
 
-        action build_srv63(ip6Addr_t s1, ip6Addr_t s2, ipv6Addr_t s3) {
+        action build_srv63(ip6Addr_t s1, ip6Addr_t s2, ip6Addr_t s3) {
         hdr.srv63.setValid();
         hdr.srv63.next_hdr = TYPE_UDP;
         hdr.srv63.hdr_ext_len =  num_segments3 * 2;
