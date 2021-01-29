@@ -208,8 +208,8 @@ parser MyParser(packet_in packet,
     state parse_ipv6_inner{
         packet.extract(hdr.ipv6_inner);
         transition select(hdr.ipv6_inner.next_hdr){
-            TYPE_UDP: parse_udp_inner);
-            TYPE_TCP: parse_tcp_inner);
+            TYPE_UDP: parse_udp_inner;
+            TYPE_TCP: parse_tcp_inner;
         }
     }
 
