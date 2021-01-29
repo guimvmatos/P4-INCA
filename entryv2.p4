@@ -317,7 +317,7 @@ control MyIngress (inout headers hdr,
     }
 
     apply {
-        if (!hdr.srv62.isValid() && hdr.gtp_ext.spare == 0){
+        if (!hdr.srv62.isValid() && hdr.gtp.spare == 0){
             teid_exact.apply();
         }
         ipv6_outer_lpm.apply();
