@@ -11,7 +11,12 @@ const bit<8> TYPE_UDP = 17;
 const bit<8> TYPE_TCP = 6;
 const bit<8> TYPE_SRV6 = 43;
 
+const bit<8> pdu_container = 133;
+const bit<8> num_segments2 = 2;
+const bit<8> num_segments3 = 3;
+
 #define max_hops 4
+
 
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
@@ -34,8 +39,8 @@ header ipv6_t {
     bit<16> payload_len;
     bit<8> next_hdr;
     bit<8> hop_limit;
-    ip6Addr_t src_addr;
-    ip6Addr_t dst_addr;
+    bit<128> src_addr;
+    bit<128> dst_addr;
 }
 
 header srv6_t2 {
@@ -46,8 +51,8 @@ header srv6_t2 {
     bit<8> last_entry;
     bit<8> flags;
     bit<16> tag;
-    ip6Addr_t segment_id1;
-    ip6Addr_t segment_id2;
+    bit<128> segment_id1;
+    bit<128> segment_id2;
 }
 
 header srv6_t3 {
@@ -58,9 +63,9 @@ header srv6_t3 {
     bit<8> last_entry;
     bit<8> flags;
     bit<16> tag;
-    ip6Addr_t segment_id1;
-    ip6Addr_t segment_id2;
-    ip6Addr_t segment_id3;
+    bit<128> segment_id1;
+    bit<128> segment_id2;
+    bit<128> segment_id3;
 }
 
 /*header srv6_list_t {
@@ -176,12 +181,45 @@ parser MyParser(packet_in packet,
     }
 
     state parse_srv6 {
-        packet.extract(hdr.srv6);
+        /*packet.extract(hdr.srv6);*/
         transition accept;
     }
 
     state parse_gtp {
         packet.extract(hdr.gtp);
+        transition select(hdr.gtp.extension_header_flag_id){
+            1: parse_gtp_ext;
+            0: parse_ipv6_inner;
+        }
+    }
+
+    state parse_gtp_ext{
+        packet.extract(hdr.gtp_ext);
+        transition select(hdr.gtp_ext_next_extension){
+            pdu_container: parse_pdu_container;
+            } 
+        }
+
+    state parse_pdu_container{
+        packet.extract(hdr.pdu_container);
+        transition parse_ipv6_inner;
+    }
+
+    state parse_ipv6_inner{
+        packet.extract(hdr.ipv6_inner);
+        transition select(hdr.ipv6_inner.next_hdr){
+            TYPE_UDP: parse_udp_inner);
+            TYPE_TCP: parse_tcp_inner);
+        }
+    }
+
+    state parse_udp_inner{
+        packet.extract(hdr.udp_inner);
+        transition accept;
+    }
+
+    state parse_tcp_inner{
+        packet.extract(hdr.tcp_inner);
         transition accept;
     }
 }
@@ -214,6 +252,37 @@ control MyIngress (inout headers hdr,
         hdr.ethernet.dstAddr = dstAddr;
     }
 
+    action build_srv62(ip6Addr_t s1, ip6Addr_t s2) {
+        hdr.srv62.setValid();
+        hdr.srv62.next_hdr = TYPE_UDP;
+        hdr.srv62.hdr_ext_len =  num_segments2 * 2;
+        hdr.srv62.routing_type = 4;
+        hdr.srv62.segment_left = num_segments2 -1;
+        hdr.srv62.last_entry = num_segments2 - 1;
+        hdr.srv62.flags = 0;
+        hdr.srv62.tag = 0;
+        hdr.srv62.segment_id1 = s1;
+        hdr.srv62.segment_id2 = s2;
+        hdr.ipv6_outer.next_hdr = TYPE_SRV6;
+        hdr.ipv6_outer.dst_addr = s2;
+    }
+
+        action build_srv63(ip6Addr_t s1, ip6Addr_t s2, ipv6Addr_t s3) {
+        hdr.srv63.setValid();
+        hdr.srv63.next_hdr = TYPE_UDP;
+        hdr.srv63.hdr_ext_len =  num_segments3 * 2;
+        hdr.srv63.routing_type = 4;
+        hdr.srv63.segment_left = num_segments3 -1;
+        hdr.srv63.last_entry = num_segments3 - 1;
+        hdr.srv63.flags = 0;
+        hdr.srv63.tag = 0;
+        hdr.srv63.segment_id1 = s1;
+        hdr.srv63.segment_id2 = s2;
+        hdr.srv63.segment_id2 = s3;
+        hdr.ipv6_outer.next_hdr = TYPE_SRV6;
+        hdr.ipv6_outer.dst_addr = s3;
+    }
+
     table ipv6_outer_lpm {
         key = {
             hdr.ipv6_outer.dst_addr:exact;
@@ -228,7 +297,29 @@ control MyIngress (inout headers hdr,
         default_action = drop();
     }
 
+    table teid_exact {
+        key = {
+            hdr.gtp.teid: ternary;
+            hdr.pdu_container.qosid: ternary;
+            hdr.ipv6_inner.dst_addr: ternary;
+            hdr.ipv6_inner.src_addr: ternary;
+            hdr.ipv6_inner.next_hdr: ternary;
+            hdr.tcp_inner.dstPort: ternary;
+            hdr.tcp_inner.srcPort: ternary;
+            hdr.udp_inner.dport: ternary;
+            hdr.udp_inner.sport: ternary;
+        }
+        actions = {
+            build_srv62;
+            build_srv63;
+        }
+        /*size = 1024;*/
+    }
+
     apply {
+        if (!hdr.srv62.isValid() && hdr.gtp_ext.spare == 0){
+            teid_exact.apply();
+        }
         ipv6_outer_lpm.apply();
     }
 }
@@ -261,7 +352,8 @@ control MyDeparser (packet_out packet,
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
-        packet.emit(hdr.srv6);
+        packet.emit(hdr.srv62);
+        packet.emit(hdr.srv63);
         packet.emit(hdr.udp);
         packet.emit(hdr.tcp);
         packet.emit(hdr.gtp);
