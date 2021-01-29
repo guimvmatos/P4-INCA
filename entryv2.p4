@@ -195,7 +195,7 @@ parser MyParser(packet_in packet,
 
     state parse_gtp_ext{
         packet.extract(hdr.gtp_ext);
-        transition select(hdr.gtp_ext_next_extension){
+        transition select(hdr.gtp_ext.next_extension){
             pdu_container: parse_pdu_container;
             } 
         }
