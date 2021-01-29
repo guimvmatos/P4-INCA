@@ -38,7 +38,7 @@ header ipv6_t {
     ip6Addr_t dst_addr;
 }
 
-header srv6_t {
+header srv6_t2 {
     bit<8> next_hdr;
     bit<8> hdr_ext_len;
     bit<8> routing_type;
@@ -48,6 +48,19 @@ header srv6_t {
     bit<16> tag;
     ip6Addr_t segment_id1;
     ip6Addr_t segment_id2;
+}
+
+header srv6_t3 {
+    bit<8> next_hdr;
+    bit<8> hdr_ext_len;
+    bit<8> routing_type;
+    bit<8> segment_left;
+    bit<8> last_entry;
+    bit<8> flags;
+    bit<16> tag;
+    ip6Addr_t segment_id1;
+    ip6Addr_t segment_id2;
+    ip6Addr_t segment_id3;
 }
 
 /*header srv6_list_t {
@@ -106,7 +119,8 @@ struct metadata {
 struct headers {
     ethernet_t              ethernet;
     ipv6_t                  ipv6_outer;
-    srv6_t                  srv6;
+    srv6_t2                 srv62;
+    srv6_t3                 srv63;
     udp_t                   udp;
     tcp_t                   tcp;
     gtp_t                   gtp;
