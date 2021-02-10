@@ -124,6 +124,7 @@ struct metadata {
 struct headers {
     ethernet_t              ethernet;
     ipv6_t                  ipv6_outer;
+    ipv6_t                  ipv6_encap;
     srv6_t2                 srv62;
     srv6_t3                 srv63;
     udp_t                   udp;
@@ -163,6 +164,7 @@ parser MyParser(packet_in packet,
             TYPE_UDP: parse_udp_outer;
             TYPE_TCP: parse_tcp_outer;
             TYPE_SRV6: parse_srv6;
+            TYPE_IPV6: parse_ipv6_encap
             default: accept; 
         }
     }
@@ -183,6 +185,17 @@ parser MyParser(packet_in packet,
     state parse_srv6 {
         /*packet.extract(hdr.srv6);*/
         transition accept;
+    }
+
+    state parse_ipv6_encap {
+        packet.extract(hdr.ipv6_encap);
+        transition select(hdr.ipv6_encap.next_hdr){
+            TYPE_UDP: parse_udp_outer;
+            TYPE_TCP: parse_tcp_outer;
+            TYPE_SRV6: parse_srv6;
+            default: accept; 
+        }
+    }
     }
 
     state parse_gtp {
@@ -266,6 +279,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.dst_addr = s2;
     }
+/* to do: alterar as duas linhas acima para ipv6_encap e terminar a configuração do cabeçalho utilizando o ipv6_encap. Fazer um teste no linux utilizando a versão encap o srv6 para verificar o posicionamento dos bits */
 
         action build_srv63(ip6Addr_t s1, ip6Addr_t s2, ip6Addr_t s3) {
         hdr.srv63.setValid();
@@ -352,6 +366,7 @@ control MyDeparser (packet_out packet,
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
+        packet.emit(hdr.ipv6_encap);
         packet.emit(hdr.srv62);
         packet.emit(hdr.srv63);
         packet.emit(hdr.udp);
