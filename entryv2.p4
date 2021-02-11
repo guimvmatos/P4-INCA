@@ -287,7 +287,11 @@ control MyIngress (inout headers hdr,
 
     action build_srv62(ip6Addr_t s1, ip6Addr_t s2) {
         hdr.srv62.setValid();
+<<<<<<< HEAD
         hdr.srv62.next_hdr = next_ipv6;
+=======
+        hdr.srv62.next_hdr = TYPE_UDP;
+>>>>>>> parent of ab0aa71 (Update entryv2.p4)
         hdr.srv62.hdr_ext_len =  num_segments2 * 2;
         hdr.srv62.routing_type = 4;
         hdr.srv62.segment_left = num_segments2 -1;
