@@ -374,13 +374,13 @@ control MyIngress (inout headers hdr,
     }
 
     apply {
-        if ((!hdr.srv62.isValid() && !hdr.srv63.isValid()) && hdr.gtp.spare == 0){
+        if (/*(*/!hdr.srv62.isValid() /*&& !hdr.srv63.isValid())*/ && hdr.gtp.spare == 0){
             teid_exact.apply();
         }
-        if (hdr.srv62.isValid() || hdr.srv63.isValid()){
+        if (hdr.srv62.isValid() /*|| hdr.srv63.isValid()*/){
             ipv6_encap_lpm.apply();
         }
-        if (!hdr.srv62.isValid() && !hdr.srv63.isValid()){
+        if (!hdr.srv62.isValid() /*&& !hdr.srv63.isValid()*/){
             ipv6_outer_lpm.apply();
         }
     }
@@ -415,7 +415,7 @@ control MyDeparser (packet_out packet,
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_encap);
         packet.emit(hdr.srv62);
-        packet.emit(hdr.srv63);
+        /*packet.emit(hdr.srv63);*/
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.udp);
         packet.emit(hdr.tcp);
