@@ -163,7 +163,7 @@ parser MyParser(packet_in packet,
     }
 
     state check_ipv6_encap {
-        transition select(hdr.lookahead<ipv6_t>().next_hdr){
+        transition select(packet.lookahead<ipv6_t>().next_hdr){
             TYPE_TCP: parse_ipv6_outer;
             TYPE_UDP: parse_ipv6_outer;
             TYPE_SRV6: parse_ipv6_encap;
@@ -239,7 +239,7 @@ parser MyParser(packet_in packet,
     }
 
     state check_srv6_sids {
-        transition select(hdr.lookahead<srv6_t2>().last_entry){
+        transition select(packet.lookahead<srv6_t2>().last_entry){
             1: parse_srv62;
             2: parse_srv63;
         }
