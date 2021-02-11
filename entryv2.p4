@@ -10,6 +10,10 @@ const bit<16> TYPE_GTP = 2152;
 const bit<8> TYPE_UDP = 17;
 const bit<8> TYPE_TCP = 6;
 const bit<8> TYPE_SRV6 = 43;
+const bit<4> version_ipv6 = 6;
+
+/* will be in srv6 header*/
+const bit<8> next_ipv6 = 41;
 
 const bit<8> pdu_container = 133;
 const bit<8> num_segments2 = 2;
@@ -154,18 +158,30 @@ parser MyParser(packet_in packet,
     state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.etherType) {
-            TYPE_IPV6: parse_ipv6_encap;
+            TYPE_IPV6: check_ipv6_encap;
         }
     }
 
-    state parse_ipv6_encap {
-        packet.extract(hdr.ipv6_encap);
-        transition select(hdr.ipv6_encap.next_hdr){
+    state check_ipv6_encap {
+        transition select(packet.lookahead<ipv6_t().next_hdr){
+            TYPE_TCP: parse_ipv6_outer;
+            TYPE_UDP: parse_ipv6_outer;
+            TYPE_SRV6: parse_ipv6_encap;
+        }
+    }
+
+    state parse_ipv6_outer {
+        packet.extract(hdr.ipv6_outer);
+        transition select(hdr.ipv6_outer.next_hdr){
             TYPE_UDP: parse_udp_outer;
             TYPE_TCP: parse_tcp_outer;
-            TYPE_SRV6: parse_srv6;
             default: accept; 
         }
+    }
+
+    state parse_tcp_outer {
+        packet.extract(hdr.tcp);
+        transition accept;
     }
 
     state parse_udp_outer {
@@ -176,28 +192,7 @@ parser MyParser(packet_in packet,
         }
     }
 
-    state parse_tcp_outer {
-        packet.extract(hdr.tcp);
-        transition accept;
-    }
-
-    state parse_srv6 {
-        packet.extract(hdr.srv62);
-        transition accept;
-    }
-/*
-    state parse_ipv6_encap {
-        packet.extract(hdr.ipv6_encap);
-        transition select(hdr.ipv6_encap.next_hdr){
-            TYPE_UDP: parse_udp_outer;
-            TYPE_TCP: parse_tcp_outer;
-            TYPE_SRV6: parse_srv6;
-            default: accept; 
-        }
-    }
-*/
-
-    state parse_gtp {
+        state parse_gtp {
         packet.extract(hdr.gtp);
         transition select(hdr.gtp.extension_header_flag_id){
             1: parse_gtp_ext;
@@ -205,12 +200,12 @@ parser MyParser(packet_in packet,
         }
     }
 
-    state parse_gtp_ext{
+        state parse_gtp_ext{
         packet.extract(hdr.gtp_ext);
         transition select(hdr.gtp_ext.next_extension){
             pdu_container: parse_pdu_container;
-            } 
-        }
+        } 
+    }
 
     state parse_pdu_container{
         packet.extract(hdr.pdu_container);
@@ -234,6 +229,32 @@ parser MyParser(packet_in packet,
         packet.extract(hdr.tcp_inner);
         transition accept;
     }
+
+    state parse_ipv6_encap {
+        packet.extract(hdr.ipv6_encap);
+        transition select(hdr.ipv6_encap.next_hdr){
+            TYPE_SRV6: check_srv6_sids;
+            default: accept; 
+        }
+    }
+
+    state check_srv6_sids {
+        transition select(packet.lookahead<srv62_t>().last_entry){
+            1: parse_srv62;
+            2: parse_srv63;
+        }
+    }
+
+    state parse_srv62 {
+        packet.extract(hdr.srv62);
+        transition accept;
+    }
+
+    state parse_srv63 {
+        packet.extract(hdr.srv63);
+        transition accept;
+    }
+
 }
 
 /*************************************************************************
@@ -266,7 +287,7 @@ control MyIngress (inout headers hdr,
 
     action build_srv62(ip6Addr_t s1, ip6Addr_t s2) {
         hdr.srv62.setValid();
-        hdr.srv62.next_hdr = hdr.ipv6_outer.next_hdr
+        hdr.srv62.next_hdr = next_ipv6;
         hdr.srv62.hdr_ext_len =  num_segments2 * 2;
         hdr.srv62.routing_type = 4;
         hdr.srv62.segment_left = num_segments2 -1;
@@ -275,14 +296,18 @@ control MyIngress (inout headers hdr,
         hdr.srv62.tag = 0;
         hdr.srv62.segment_id1 = s1;
         hdr.srv62.segment_id2 = s2;
-        hdr.ipv6_encap.next_hdr = TYPE_SRV6;
+        hdr.ipv6_encap.setValid();
+        hdr.ipv6_encap.version = hdr.ipv6_outer.version;
+        hdr.ipv6_encap.flow_label = hdr.ipv6_outer.flow_label;
+        hdr.ipv6_encap.payload_len = hdr.ipv6_outer.payload_len + 80;
+        hdr.ipv6_encap.hop_limit = hdr.ipv6_outer.hop_limit;
+        hdr.ipv6_encap.src_addr = hdr.ipv6_outer.src_addr;
         hdr.ipv6_encap.dst_addr = s2;
     }
-/* to do: alterar as duas linhas acima para ipv6_encap e terminar a configuração do cabeçalho utilizando o ipv6_encap. Fazer um teste no linux utilizando a versão encap o srv6 para verificar o posicionamento dos bits */
 
         action build_srv63(ip6Addr_t s1, ip6Addr_t s2, ip6Addr_t s3) {
         hdr.srv63.setValid();
-        hdr.srv63.next_hdr = TYPE_UDP;
+        hdr.srv63.next_hdr = next_ipv6;
         hdr.srv63.hdr_ext_len =  num_segments3 * 2;
         hdr.srv63.routing_type = 4;
         hdr.srv63.segment_left = num_segments3 -1;
@@ -292,13 +317,32 @@ control MyIngress (inout headers hdr,
         hdr.srv63.segment_id1 = s1;
         hdr.srv63.segment_id2 = s2;
         hdr.srv63.segment_id2 = s3;
-        hdr.ipv6_outer.next_hdr = TYPE_SRV6;
-        hdr.ipv6_outer.dst_addr = s3;
+        hdr.ipv6_encap.setValid();
+        hdr.ipv6_encap.version = hdr.ipv6_outer.version;
+        hdr.ipv6_encap.flow_label = hdr.ipv6_outer.flow_label;
+        hdr.ipv6_encap.payload_len = hdr.ipv6_outer.payload_len + 96;
+        hdr.ipv6_encap.hop_limit = hdr.ipv6_outer.hop_limit;
+        hdr.ipv6_encap.src_addr = hdr.ipv6_outer.src_addr;
+        hdr.ipv6_encap.dst_addr = s3;
     }
 
     table ipv6_outer_lpm {
         key = {
             hdr.ipv6_outer.dst_addr:exact;
+        }
+
+        actions = {
+            ipv6_forward;
+            drop;
+            NoAction;
+        }
+        size = 1024;
+        default_action = drop();
+    }
+
+        table ipv6_encap_lpm {
+        key = {
+            hdr.ipv6_encap.dst_addr:exact;
         }
 
         actions = {
@@ -330,10 +374,15 @@ control MyIngress (inout headers hdr,
     }
 
     apply {
-        if (!hdr.srv62.isValid() && hdr.gtp.spare == 0){
+        if ((!hdr.srv62.isValid() && !hdr.srv63.isValid()) && hdr.gtp.spare == 0){
             teid_exact.apply();
         }
-        ipv6_outer_lpm.apply();
+        if (hdr.srv62.isValid() || hdr.srv63.isValid()){
+            ipv6_encap_lpm.apply();
+        }
+        if (!hdr.srv62.isValid() && !hdr.srv63.isValid()){
+            ipv6_outer_lpm.apply();
+        }
     }
 }
 
@@ -364,10 +413,10 @@ control MyDeparser (packet_out packet,
                     in headers hdr) {
     apply {
         packet.emit(hdr.ethernet);
-        packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.ipv6_encap);
         packet.emit(hdr.srv62);
         packet.emit(hdr.srv63);
+        packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.udp);
         packet.emit(hdr.tcp);
         packet.emit(hdr.gtp);
