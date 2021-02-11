@@ -141,7 +141,7 @@ parser MyParser(packet_in packet,
             default: accept; 
         }
     }
-
+/* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira */
     state check_srv6 {
         transition select (packet.lookahead<srv6_t2>().last_entry){
             1: parse_srv62;
