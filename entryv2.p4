@@ -137,17 +137,18 @@ parser MyParser(packet_in packet,
         transition select(hdr.ipv6_outer.next_hdr){
             TYPE_UDP: parse_udp_outer;
             TYPE_TCP: parse_tcp_outer;
-            TYPE_SRV6: check_srv6;
+            TYPE_SRV6: parse_srv63;
             default: accept; 
         }
     }
-/* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira */
+/* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira 
     state check_srv6 {
         transition select (packet.lookahead<srv6_t2>().last_entry){
             1: parse_srv62;
             2: parse_srv63;
         }
     }
+*/
     state parse_udp_outer {
         packet.extract(hdr.udp);
         transition select (hdr.udp.dport){
@@ -159,12 +160,12 @@ parser MyParser(packet_in packet,
         packet.extract(hdr.tcp);
         transition accept;
     }
-
+/*
     state parse_srv62 {
         packet.extract(hdr.srv62);
         transition accept;
     }
-
+*/
     state parse_srv63 {
         packet.extract(hdr.srv63);
         transition accept;
