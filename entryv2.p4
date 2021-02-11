@@ -239,7 +239,7 @@ parser MyParser(packet_in packet,
     }
 
     state check_srv6_sids {
-        transition select(hdr.lookahead<srv62_t>().last_entry){
+        transition select(hdr.lookahead<srv6_t2>().last_entry){
             1: parse_srv62;
             2: parse_srv63;
         }
