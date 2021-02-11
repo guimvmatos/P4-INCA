@@ -123,10 +123,10 @@ struct metadata {
 
 struct headers {
     ethernet_t              ethernet;
-    ipv6_t                  ipv6_outer;
     ipv6_t                  ipv6_encap;
     srv6_t2                 srv62;
     srv6_t3                 srv63;
+    ipv6_t                  ipv6_outer;
     udp_t                   udp;
     tcp_t                   tcp;
     gtp_t                   gtp;
@@ -154,17 +154,16 @@ parser MyParser(packet_in packet,
     state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.etherType) {
-            TYPE_IPV6: parse_ipv6_outer;
+            TYPE_IPV6: parse_ipv6_encap;
         }
     }
 
-    state parse_ipv6_outer {
-        packet.extract(hdr.ipv6_outer);
-        transition select(hdr.ipv6_outer.next_hdr){
+    state parse_ipv6_encap {
+        packet.extract(hdr.ipv6_encap);
+        transition select(hdr.ipv6_encap.next_hdr){
             TYPE_UDP: parse_udp_outer;
             TYPE_TCP: parse_tcp_outer;
             TYPE_SRV6: parse_srv6;
-            TYPE_IPV6: parse_ipv6_encap
             default: accept; 
         }
     }
@@ -183,10 +182,10 @@ parser MyParser(packet_in packet,
     }
 
     state parse_srv6 {
-        /*packet.extract(hdr.srv6);*/
+        packet.extract(hdr.srv62);
         transition accept;
     }
-
+/*
     state parse_ipv6_encap {
         packet.extract(hdr.ipv6_encap);
         transition select(hdr.ipv6_encap.next_hdr){
@@ -196,7 +195,7 @@ parser MyParser(packet_in packet,
             default: accept; 
         }
     }
-    }
+*/
 
     state parse_gtp {
         packet.extract(hdr.gtp);
@@ -276,8 +275,8 @@ control MyIngress (inout headers hdr,
         hdr.srv62.tag = 0;
         hdr.srv62.segment_id1 = s1;
         hdr.srv62.segment_id2 = s2;
-        hdr.ipv6_outer.next_hdr = TYPE_SRV6;
-        hdr.ipv6_outer.dst_addr = s2;
+        hdr.ipv6_encap.next_hdr = TYPE_SRV6;
+        hdr.ipv6_encap.dst_addr = s2;
     }
 /* to do: alterar as duas linhas acima para ipv6_encap e terminar a configuração do cabeçalho utilizando o ipv6_encap. Fazer um teste no linux utilizando a versão encap o srv6 para verificar o posicionamento dos bits */
 
