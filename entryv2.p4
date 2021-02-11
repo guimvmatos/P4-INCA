@@ -129,7 +129,7 @@ struct headers {
     ethernet_t              ethernet;
     ipv6_t                  ipv6_encap;
     srv6_t2                 srv62;
-    srv6_t3                 srv63;
+    /*srv6_t3                 srv63;*/
     ipv6_t                  ipv6_outer;
     udp_t                   udp;
     tcp_t                   tcp;
@@ -241,7 +241,7 @@ parser MyParser(packet_in packet,
     state check_srv6_sids {
         transition select(packet.lookahead<srv6_t2>().last_entry){
             1: parse_srv62;
-            2: parse_srv63;
+            /*2: parse_srv63;*/
         }
     }
 
@@ -249,12 +249,12 @@ parser MyParser(packet_in packet,
         packet.extract(hdr.srv62);
         transition accept;
     }
-
+/*
     state parse_srv63 {
         packet.extract(hdr.srv63);
         transition accept;
     }
-
+*/
 }
 
 /*************************************************************************
@@ -304,7 +304,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_encap.src_addr = hdr.ipv6_outer.src_addr;
         hdr.ipv6_encap.dst_addr = s2;
     }
-
+/*
         action build_srv63(ip6Addr_t s1, ip6Addr_t s2, ip6Addr_t s3) {
         hdr.srv63.setValid();
         hdr.srv63.next_hdr = next_ipv6;
@@ -325,7 +325,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_encap.src_addr = hdr.ipv6_outer.src_addr;
         hdr.ipv6_encap.dst_addr = s3;
     }
-
+*/
     table ipv6_outer_lpm {
         key = {
             hdr.ipv6_outer.dst_addr:exact;
@@ -368,7 +368,7 @@ control MyIngress (inout headers hdr,
         }
         actions = {
             build_srv62;
-            build_srv63;
+           /* build_srv63;*/
         }
         /*size = 1024;*/
     }
