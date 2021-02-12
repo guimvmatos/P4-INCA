@@ -233,10 +233,11 @@ control MyIngress (inout headers hdr,
     -> exemplo em 5g srv6 bmv2 mininet no github -> utilizei como base, mas foi bem diferente
     */
 
-    action srv6_pop () {
+    action srv6_pop (bit<8> hop) {
         hdr.ipv6_outer.next_hdr = hdr.srv63.next_hdr;
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56; /*cada sid tem 16bytes. são 3 sids + 8 bytes do header*/
         hdr.srv63.setInvalid();
+        hdr.ipv6_outer.hop_limit = hop;
     }
 
     action build_srv62(ip6Addr_t s1, ip6Addr_t s2) {

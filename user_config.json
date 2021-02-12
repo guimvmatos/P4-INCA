@@ -143,7 +143,12 @@
             "match": 
             { "ipv6_outer.dst_addr": { "value": "fc00::4" } },
             "action": {
-               
+                "type": "",
+                "data": {
+                    "hop": { 
+                        "value": "64" 
+                    }
+                }
             }
         }
         ]
