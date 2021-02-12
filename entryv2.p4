@@ -287,7 +287,7 @@ control MyIngress (inout headers hdr,
             drop;
         }
         size = 1024;
-        default_action = drop()
+        default_action = drop();
 
     }
 
