@@ -141,8 +141,10 @@
         {
             "name": "sid_pop",
             "match": 
-            { "ipv6_outer.dst_addr": { "value": "fc00::4" } }
-            
+            { "ipv6_outer.dst_addr": { "value": "fc00::4" } },
+            "action": {
+               
+            }
         }
         ]
     }
