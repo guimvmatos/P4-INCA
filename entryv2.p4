@@ -226,12 +226,18 @@ control MyIngress (inout headers hdr,
         hdr.ethernet.dstAddr = dstAddr;
     }
 
-    /* to do: construir função srv6_pop: 
-    -> setar como invalido o srv63
-    -> alterar ipv6_outer.next_hdr para hdr.srvr63.next_hdr
-    -> alterar ipv6_outer.dst_addr para parametro recebido pela tabela
-    -> exemplo em 5g srv6 bmv2 mininet no github
+    /* to do: done: construir função srv6_pop: 
+    -> setar como invalido o srv63 -> feito
+    -> alterar ipv6_outer.next_hdr para hdr.srvr63.next_hdr -> feito
+    -> alterar ipv6_outer.dst_addr para parametro recebido pela tabela -> não é necessário pois o ultimo host srv6 aware já faz isto
+    -> exemplo em 5g srv6 bmv2 mininet no github -> utilizei como base, mas foi bem diferente
     */
+
+    action srv6_pop () {
+        hdr.ipv6_outer.next_hdr = hdr.srv63.next_hdr;
+        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56; /*cada sid tem 16bytes. são 3 sids + 8 bytes do header*/
+        hdr.srv63.setInvalid();
+    }
 
     action build_srv62(ip6Addr_t s1, ip6Addr_t s2) {
         hdr.srv62.setValid();
@@ -248,18 +254,19 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.dst_addr = s2;
     }
     
-    /* to do: construir action build_srv63 no modo inline: 
-    -> segment_id1 será o endereço final <ipv6_outer.dst_addr>.
-    -> ipv6_outer.dst_addr será o primeiro ip da sid <s3>.
-    -> pegar exemplo de configuração de modo inline no linux 
+    /* to do: done: construir action build_srv63 no modo inline: 
+    -> segment_id1 será o endereço final <ipv6_outer.dst_addr>. -> s1 recebeu este valor
+    -> ipv6_outer.dst_addr será o primeiro ip da sid <s3>. -> feito
+    -> pegar exemplo de configuração de modo inline no linux -> feito
     */
     action build_srv63(ip6Addr_t s1, ip6Addr_t s2, ip6Addr_t s3) {
+        s1 = hdr.ipv6_outer.dst_addr;
         hdr.srv63.setValid();
         hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
-        hdr.srv63.hdr_ext_len =  num_segments3 * 2;
+        hdr.srv63.hdr_ext_len =  6;
         hdr.srv63.routing_type = 4;
-        hdr.srv63.segment_left = num_segments3 -1;
-        hdr.srv63.last_entry = num_segments3 - 1;
+        hdr.srv63.segment_left = 2;
+        hdr.srv63.last_entry = 2;
         hdr.srv63.flags = 0;
         hdr.srv63.tag = 0;
         hdr.srv63.segment_id1 = s1;
@@ -269,7 +276,20 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.dst_addr = s3;
     }
 
-    /* to do: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
+    /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
+
+    table pop {
+        key = {
+            hdr.ipv6_outer.dst_addr:exact;
+        }
+        actions = {
+            srv6_pop;
+            drop;
+        }
+        size = 1024;
+        default_action = drop()
+
+    }
 
     table ipv6_outer_lpm {
         key = {
@@ -302,12 +322,14 @@ control MyIngress (inout headers hdr,
         /*size = 1024;*/
     }
 
-    /* to do: configurar apply para chamar tabela my_sid se srv6 for válido e segment_left =0
+    /* to do: done: configurar apply para chamar tabela my_sid se srv6 for válido e segment_left =0
     exemplo em 5g srv6 bmv2 mininet */
     
     apply {
         if (!hdr.srv62.isValid() && hdr.gtp.spare == 0){
             teid_exact.apply();
+        } else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
+            pop.apply();
         }
         ipv6_outer_lpm.apply();
     }
