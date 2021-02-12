@@ -123,7 +123,7 @@
             "match": 
                 { "gtp.teid" : { "value" : "32" } },
             "action": {
-                "type": "ingress::build_srv62",
+                "type": "ingress::build_srv63",
                 "data": {
                     "s2": { 
                         "value": "fcf0:23::6006" 
