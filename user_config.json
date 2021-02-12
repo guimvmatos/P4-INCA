@@ -125,10 +125,10 @@
             "action": {
                 "type": "ingress::build_srv62",
                 "data": {
-                    "s1": { 
+                    "s2": { 
                         "value": "fcf0:23::6006" 
                     },
-                    "s2": { 
+                    "s3": { 
                         "value": "fcf0:12::100" 
                     }
                 }

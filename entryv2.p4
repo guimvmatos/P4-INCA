@@ -240,7 +240,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.hop_limit = hop;
     }
 
-    action build_srv62(ip6Addr_t s1, ip6Addr_t s2) {
+    action build_srv62(ip6Addr_t s1, ip6Addr_t s2 {
         hdr.srv62.setValid();
         hdr.srv62.next_hdr = hdr.ipv6_outer.next_hdr;
         hdr.srv62.hdr_ext_len =  num_segments2 * 2;
@@ -260,7 +260,7 @@ control MyIngress (inout headers hdr,
     -> ipv6_outer.dst_addr será o primeiro ip da sid <s3>. -> feito
     -> pegar exemplo de configuração de modo inline no linux -> feito
     */
-    action build_srv63(ip6Addr_t s1, ip6Addr_t s2, ip6Addr_t s3) {
+    action build_srv63(ip6Addr_t s2, ip6Addr_t s3) {
         hdr.srv63.setValid();
         hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
         hdr.srv63.hdr_ext_len =  6;
