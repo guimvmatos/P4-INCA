@@ -238,6 +238,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56; /*cada sid tem 16bytes. são 3 sids + 8 bytes do header*/
         hdr.srv63.setInvalid();
         hdr.ipv6_outer.hop_limit = hop;
+        hdr.gtp.spare = 1;
     }
 
     action build_srv62(ip6Addr_t s1, ip6Addr_t s2) {
@@ -271,7 +272,7 @@ control MyIngress (inout headers hdr,
         hdr.srv63.tag = 0;
         hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr;;
         hdr.srv63.segment_id2 = s2;
-        hdr.srv63.segment_id2 = s3;
+        hdr.srv63.segment_id3 = s3;
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.dst_addr = s3;
     }
