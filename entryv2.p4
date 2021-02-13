@@ -327,7 +327,7 @@ control MyIngress (inout headers hdr,
     exemplo em 5g srv6 bmv2 mininet */
     
     apply {
-        if (!hdr.srv62.isValid() && hdr.gtp.spare == 0){
+        if (!hdr.srv63.isValid() && hdr.gtp.spare == 0){
             teid_exact.apply();
         } else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
             pop.apply();
