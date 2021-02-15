@@ -11,6 +11,12 @@ const bit<8> TYPE_SRV6 = 43;
 const bit<8> pdu_container = 133;
 const bit<8> num_segments2 = 2;
 const bit<8> num_segments3 = 3;
+/* will be in srv6 header*/
+const bit<8> TYPE_SR = 4;
+const bit<8> SL = 2;
+const bit<8> LE = 2;
+const bit<8> LEN = 6;
+
 #define max_hops 4
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
