@@ -228,7 +228,7 @@ control MyIngress (inout headers hdr,
     }
     action ipv6_forward (macAddr_t dstAddr, egressSpec_t port) {
         standard_metadata.egress_spec = port;
-        hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
+        /*hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;*/
         hdr.ethernet.dstAddr = dstAddr;
     }
 
@@ -281,6 +281,7 @@ control MyIngress (inout headers hdr,
         hdr.srv63.segment_id3 = s3;
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.dst_addr = s3;
+        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
     }
 
     /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
