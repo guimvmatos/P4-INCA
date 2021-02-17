@@ -111,7 +111,6 @@ struct metadata {
 struct headers {
     ethernet_t              ethernet;
     ipv6_t                  ipv6_outer;
-    srv6_t2                 srv62;
     srv6_t3                 srv63;
     udp_t                   udp;
     tcp_t                   tcp;
@@ -246,7 +245,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.hop_limit = hop;
         hdr.gtp.spare = 1;
     }
-
+/*
     action build_srv62(ip6Addr_t s1, ip6Addr_t s2) {
         hdr.srv62.setValid();
         hdr.srv62.next_hdr = hdr.ipv6_outer.next_hdr;
@@ -261,7 +260,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.dst_addr = s2;
     }
-    
+    */
     /* to do: done: construir action build_srv63 no modo inline: 
     -> segment_id1 será o endereço final <ipv6_outer.dst_addr>. -> s1 recebeu este valor
     -> ipv6_outer.dst_addr será o primeiro ip da sid <s3>. -> feito
@@ -324,7 +323,7 @@ control MyIngress (inout headers hdr,
             hdr.udp_inner.sport: ternary;
         }
         actions = {
-            build_srv62;
+           /* build_srv62;*/
             build_srv63;
         }
         /*size = 1024;*/
