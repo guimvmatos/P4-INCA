@@ -366,14 +366,14 @@ control MyDeparser (packet_out packet,
         packet.emit(hdr.ipv6_outer);
         /*packet.emit(hdr.srv62);*/
         packet.emit(hdr.srv63);
-        packet.emit(hdr.udp);
+        /*packet.emit(hdr.udp);
         packet.emit(hdr.tcp);
         packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_ext);
         packet.emit(hdr.pdu_container);
         packet.emit(hdr.ipv6_inner);
         packet.emit(hdr.udp_inner);
-        packet.emit(hdr.tcp_inner);
+        packet.emit(hdr.tcp_inner);*/
     }
 }
 /*************************************************************************
