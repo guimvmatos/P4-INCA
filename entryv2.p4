@@ -39,17 +39,7 @@ header ipv6_t {
     bit<128> src_addr;
     bit<128> dst_addr;
 }
-header srv6_t2 {
-    bit<8> next_hdr;
-    bit<8> hdr_ext_len;
-    bit<8> routing_type;
-    bit<8> segment_left;
-    bit<8> last_entry;
-    bit<8> flags;
-    bit<16> tag;
-    bit<128> segment_id1;
-    bit<128> segment_id2;
-}
+
 header srv6_t3 {
     bit<8> next_hdr;
     bit<8> hdr_ext_len;
@@ -62,9 +52,7 @@ header srv6_t3 {
     bit<128> segment_id2;
     bit<128> segment_id3;
 }
-/*header srv6_list_t {
-    bit<128> segment_id;
-}*/
+
 header udp_t {
     bit<16> sport;
     bit<16> dport;
@@ -146,6 +134,12 @@ parser MyParser(packet_in packet,
             default: accept; 
         }
     }
+    
+    state parse_srv63 {
+        packet.extract(hdr.srv63);
+        transition accept;
+    }
+
 /* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira 
     state check_srv6 {
         transition select (packet.lookahead<srv6_t2>().last_entry){
@@ -163,16 +157,6 @@ parser MyParser(packet_in packet,
     }
     state parse_tcp_outer {
         packet.extract(hdr.tcp);
-        transition accept;
-    }
-/*
-    state parse_srv62 {
-        packet.extract(hdr.srv62);
-        transition accept;
-    }
-*/
-    state parse_srv63 {
-        packet.extract(hdr.srv63);
         transition accept;
     }
     
@@ -245,22 +229,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.hop_limit = hop;
         hdr.gtp.spare = 1;
     }
-/*
-    action build_srv62(ip6Addr_t s1, ip6Addr_t s2) {
-        hdr.srv62.setValid();
-        hdr.srv62.next_hdr = hdr.ipv6_outer.next_hdr;
-        hdr.srv62.hdr_ext_len =  num_segments2 * 2;
-        hdr.srv62.routing_type = 4;
-        hdr.srv62.segment_left = num_segments2 -1;
-        hdr.srv62.last_entry = num_segments2 - 1;
-        hdr.srv62.flags = 0;
-        hdr.srv62.tag = 0;
-        hdr.srv62.segment_id1 = s1;
-        hdr.srv62.segment_id2 = s2;
-        hdr.ipv6_outer.next_hdr = TYPE_SRV6;
-        hdr.ipv6_outer.dst_addr = s2;
-    }
-    */
+
     /* to do: done: construir action build_srv63 no modo inline: 
     -> segment_id1 será o endereço final <ipv6_outer.dst_addr>. -> s1 recebeu este valor
     -> ipv6_outer.dst_addr será o primeiro ip da sid <s3>. -> feito
@@ -323,7 +292,6 @@ control MyIngress (inout headers hdr,
             hdr.udp_inner.sport: ternary;
         }
         actions = {
-           /* build_srv62;*/
             build_srv63;
         }
         /*size = 1024;*/
@@ -364,16 +332,15 @@ control MyDeparser (packet_out packet,
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
-        /*packet.emit(hdr.srv62);*/
         packet.emit(hdr.srv63);
-        /*packet.emit(hdr.udp);
+        packet.emit(hdr.udp);
         packet.emit(hdr.tcp);
         packet.emit(hdr.gtp);
         packet.emit(hdr.gtp_ext);
         packet.emit(hdr.pdu_container);
         packet.emit(hdr.ipv6_inner);
         packet.emit(hdr.udp_inner);
-        packet.emit(hdr.tcp_inner);*/
+        packet.emit(hdr.tcp_inner);
     }
 }
 /*************************************************************************
