@@ -236,6 +236,7 @@ control MyIngress (inout headers hdr,
     -> pegar exemplo de configuração de modo inline no linux -> feito
     */
     action build_srv63(ip6Addr_t s2, ip6Addr_t s3) {
+        hdr.srv63.setValid();
         hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
         hdr.srv63.hdr_ext_len =  LEN;
         hdr.srv63.routing_type = TYPE_SR;
@@ -249,7 +250,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.dst_addr = s3;
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
-        hdr.srv63.setValid();
+        
     }
 
     /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
