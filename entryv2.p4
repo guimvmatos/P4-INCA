@@ -206,6 +206,7 @@ control MyVerifyChecksum(inout headers hdr,
 control MyIngress (inout headers hdr,
                    inout metadata meta,
                    inout standard_metadata_t standard_metadata) {
+
     action drop() {
         mark_to_drop();
     }
@@ -215,12 +216,29 @@ control MyIngress (inout headers hdr,
         hdr.ethernet.dstAddr = dstAddr;
     }
 
-    /* to do: done: construir função srv6_pop: 
-    -> setar como invalido o srv63 -> feito
-    -> alterar ipv6_outer.next_hdr para hdr.srvr63.next_hdr -> feito
-    -> alterar ipv6_outer.dst_addr para parametro recebido pela tabela -> não é necessário pois o ultimo host srv6 aware já faz isto
-    -> exemplo em 5g srv6 bmv2 mininet no github -> utilizei como base, mas foi bem diferente
-    */
+    table ipv6_outer_lpm {
+        key = {
+            hdr.ipv6_outer.dst_addr:exact;
+        }
+        actions = {
+            ipv6_forward;
+            drop;
+            NoAction;
+        }
+        size = 1024;
+        default_action = drop();
+    }
+    
+    apply {
+        ipv6_outer_lpm.apply();
+    }
+}
+/*************************************************************************
+****************  E G R E S S   P R O C E S S I N G   *******************
+*************************************************************************/
+control MyEgress(inout headers hdr,
+                 inout metadata meta,
+                 inout standard_metadata_t standard_metadata) {
 
     action srv6_pop (bit<8> hop) {
         hdr.ipv6_outer.next_hdr = hdr.srv63.next_hdr;
@@ -230,11 +248,6 @@ control MyIngress (inout headers hdr,
         hdr.gtp.spare = 1;
     }
 
-    /* to do: done: construir action build_srv63 no modo inline: 
-    -> segment_id1 será o endereço final <ipv6_outer.dst_addr>. -> s1 recebeu este valor
-    -> ipv6_outer.dst_addr será o primeiro ip da sid <s3>. -> feito
-    -> pegar exemplo de configuração de modo inline no linux -> feito
-    */
     action build_srv63(ip6Addr_t s2, ip6Addr_t s3) {
         hdr.srv63.setValid();
         hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
@@ -250,36 +263,8 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.dst_addr = s3;
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
-        
     }
 
-    /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
-
-    table pop {
-        key = {
-            hdr.ipv6_outer.dst_addr:exact;
-        }
-        actions = {
-            srv6_pop;
-            drop;
-        }
-        size = 1024;
-        default_action = drop();
-
-    }
-
-    table ipv6_outer_lpm {
-        key = {
-            hdr.ipv6_outer.dst_addr:exact;
-        }
-        actions = {
-            ipv6_forward;
-            drop;
-            NoAction;
-        }
-        size = 1024;
-        default_action = drop();
-    }
     table teid_exact {
         key = {
             hdr.gtp.teid: ternary;
@@ -298,25 +283,25 @@ control MyIngress (inout headers hdr,
         /*size = 1024;*/
     }
 
-    /* to do: done: configurar apply para chamar tabela my_sid se srv6 for válido e segment_left =0
-    exemplo em 5g srv6 bmv2 mininet */
-    
+    table pop {
+        key = {
+            hdr.ipv6_outer.dst_addr:exact;
+        }
+        actions = {
+            srv6_pop;
+            drop;
+        }
+        size = 1024;
+        default_action = drop();
+    }
+
     apply {
         if (!hdr.srv63.isValid() && hdr.gtp.spare == 0){
             teid_exact.apply();
         } else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
             pop.apply();
         }
-        ipv6_outer_lpm.apply();
     }
-}
-/*************************************************************************
-****************  E G R E S S   P R O C E S S I N G   *******************
-*************************************************************************/
-control MyEgress(inout headers hdr,
-                 inout metadata meta,
-                 inout standard_metadata_t standard_metadata) {
-    apply {  }
 }
 /*************************************************************************
 *************   C H E C K S U M    C O M P U T A T I O N   **************
