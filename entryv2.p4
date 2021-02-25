@@ -24,6 +24,7 @@ const bit<8> LEN = 6;
 typedef bit<16> egressSpec_t;
 typedef bit<48> macAddr_t;
 typedef bit<128> ip6Addr_t;
+
 header ethernet_t {
     macAddr_t dstAddr;
     macAddr_t srcAddr;
@@ -59,40 +60,7 @@ header udp_t {
     bit<16> len;
     bit<16> checksum;
 }
-header tcp_t {
-    bit<16> srcPort;
-    bit<16> dstPort;
-    bit<32> seqNo;
-    bit<32> ackNo;
-    bit<4>  dataOffset;
-    bit<3>  res;
-    bit<3>  ecn;
-    bit<6>  ctrl;
-    bit<16> window;
-    bit<16> checksum;
-    bit<16> urgentPtr;
-}
-header gtp_t {
-    bit<3>  version_field_id;
-    bit<1>  proto_type_id;
-    bit<1>  spare;
-    bit<1>  extension_header_flag_id;
-    bit<1>  sequence_number_flag_id;
-    bit<1>  npdu_number_flag_id;
-    bit<8>  msgtype;
-    bit<16> msglen;
-    bit<32> teid;
-}
-header gtp_ext_t {
-	bit<8> next_extension;
-}
-header pdu_container_t {
-	bit<4> pdu_type;
-	bit<5> spare;
-	bit<1> rqi;
-	bit<6> qosid;
-	bit<8> padding; 
-}
+
 struct metadata {
     bit<1> anything;
 }
@@ -101,13 +69,7 @@ struct headers {
     ipv6_t                  ipv6_outer;
     srv6_t3                 srv63;
     udp_t                   udp;
-    tcp_t                   tcp;
-    gtp_t                   gtp;
-    gtp_ext_t               gtp_ext;
-    pdu_container_t         pdu_container;
-    ipv6_t                  ipv6_inner;
-    udp_t                   udp_inner;
-    tcp_t                   tcp_inner;                   
+                  
 }
 /*************************************************************************
 *********************** P A R S E R  ***********************************
@@ -129,7 +91,6 @@ parser MyParser(packet_in packet,
         packet.extract(hdr.ipv6_outer);
         transition select(hdr.ipv6_outer.next_hdr){
             TYPE_UDP: parse_udp_outer;
-            TYPE_TCP: parse_tcp_outer;
             TYPE_SRV6: parse_srv63;
             default: accept; 
         }
@@ -150,48 +111,11 @@ parser MyParser(packet_in packet,
 */
     state parse_udp_outer {
         packet.extract(hdr.udp);
-        transition select (hdr.udp.dport){
-            TYPE_GTP: parse_gtp;
-            default: accept;
-        }
-    }
-    state parse_tcp_outer {
-        packet.extract(hdr.tcp);
         transition accept;
-    }
+
+        }
     
-    state parse_gtp {
-        packet.extract(hdr.gtp);
-        transition select(hdr.gtp.extension_header_flag_id){
-            1: parse_gtp_ext;
-            0: parse_ipv6_inner;
-        }
-    }
-    state parse_gtp_ext{
-        packet.extract(hdr.gtp_ext);
-        transition select(hdr.gtp_ext.next_extension){
-            pdu_container: parse_pdu_container;
-            } 
-        }
-    state parse_pdu_container{
-        packet.extract(hdr.pdu_container);
-        transition parse_ipv6_inner;
-    }
-    state parse_ipv6_inner{
-        packet.extract(hdr.ipv6_inner);
-        transition select(hdr.ipv6_inner.next_hdr){
-            TYPE_UDP: parse_udp_inner;
-            TYPE_TCP: parse_tcp_inner;
-        }
-    }
-    state parse_udp_inner{
-        packet.extract(hdr.udp_inner);
-        transition accept;
-    }
-    state parse_tcp_inner{
-        packet.extract(hdr.tcp_inner);
-        transition accept;
-    }
+    
 }
 /*************************************************************************
 ************   C H E C K S U M    V E R I F I C A T I O N   *************
@@ -227,7 +151,6 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56; /*cada sid tem 16bytes. são 3 sids + 8 bytes do header*/
         hdr.srv63.setInvalid();
         hdr.ipv6_outer.hop_limit = hop;
-        hdr.gtp.spare = 1;
     }
 
     /* to do: done: construir action build_srv63 no modo inline: 
@@ -252,8 +175,6 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
         
     }
-
-    /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
 
     table pop {
         key = {
@@ -282,15 +203,7 @@ control MyIngress (inout headers hdr,
     }
     table teid_exact {
         key = {
-            hdr.gtp.teid: ternary;
-            hdr.pdu_container.qosid: ternary;
-            hdr.ipv6_inner.dst_addr: ternary;
-            hdr.ipv6_inner.src_addr: ternary;
-            hdr.ipv6_inner.next_hdr: ternary;
-            hdr.tcp_inner.dstPort: ternary;
-            hdr.tcp_inner.srcPort: ternary;
-            hdr.udp_inner.dport: ternary;
-            hdr.udp_inner.sport: ternary;
+            hdr.ipv6_outer.dst_addr:exact;
         }
         actions = {
             build_srv63;
@@ -298,11 +211,8 @@ control MyIngress (inout headers hdr,
         /*size = 1024;*/
     }
 
-    /* to do: done: configurar apply para chamar tabela my_sid se srv6 for válido e segment_left =0
-    exemplo em 5g srv6 bmv2 mininet */
-    
     apply {
-        if (!hdr.srv63.isValid() && hdr.gtp.spare == 0){
+        if (!hdr.srv63.isValid(){
             teid_exact.apply();
         } else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
             pop.apply();
@@ -335,13 +245,6 @@ control MyDeparser (packet_out packet,
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv63);
         packet.emit(hdr.udp);
-        packet.emit(hdr.tcp);
-        packet.emit(hdr.gtp);
-        packet.emit(hdr.gtp_ext);
-        packet.emit(hdr.pdu_container);
-        packet.emit(hdr.ipv6_inner);
-        packet.emit(hdr.udp_inner);
-        packet.emit(hdr.tcp_inner);
     }
 }
 /*************************************************************************
