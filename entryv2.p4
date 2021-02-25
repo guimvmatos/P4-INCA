@@ -212,7 +212,7 @@ control MyIngress (inout headers hdr,
     }
 
     apply {
-        if (!hdr.srv63.isValid(){
+        if (!hdr.srv63.isValid()){
             teid_exact.apply();
         } else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
             pop.apply();
