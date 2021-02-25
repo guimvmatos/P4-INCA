@@ -121,7 +121,7 @@
         {
             "name": "teid_32",
             "match": 
-                { "gtp.teid" : { "value" : "32" } },
+                { "ipv6_outer.dst_addr" : { "value" : "fc00::4" } },
             "action": {
                 "type": "ingress::build_srv63",
                 "data": {
