@@ -184,6 +184,7 @@ parser MyParser(packet_in packet,
             TYPE_TCP: parse_tcp_inner;
         }
     }
+    
     state parse_udp_inner{
         packet.extract(hdr.udp_inner);
         transition accept;
