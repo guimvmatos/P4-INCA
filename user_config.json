@@ -116,7 +116,7 @@
         }
         ]
      },
-     "ingress::teid_exact": {
+     "egress::teid_exact": {
         "rules": [
         {
             "name": "teid_32",
@@ -136,7 +136,7 @@
         }
         ]
     },
-    "ingress::pop": {
+    "egress::pop": {
         "rules": [
         {
             "name": "sid_pop",
