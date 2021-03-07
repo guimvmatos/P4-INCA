@@ -67,6 +67,7 @@ struct metadata {
 struct headers {
     ethernet_t              ethernet;
     ipv6_t                  ipv6_outer;
+    udp_t                   udp_outer;
     srv6_t3                 srv63;
     udp_t                   udp;
                   
@@ -112,7 +113,6 @@ parser MyParser(packet_in packet,
     state parse_udp_outer {
         packet.extract(hdr.udp);
         transition accept;
-
         }
     
     
@@ -243,6 +243,7 @@ control MyDeparser (packet_out packet,
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
+        packet.emit(hdr.udp_outer);
         packet.emit(hdr.srv63);
         packet.emit(hdr.udp);
     }
