@@ -243,9 +243,8 @@ control MyDeparser (packet_out packet,
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv6_outer);
-        packet.emit(hdr.udp_outer);
         packet.emit(hdr.srv63);
-        packet.emit(hdr.udp);
+        packet.emit(hdr.udp_outer);
     }
 }
 /*************************************************************************
