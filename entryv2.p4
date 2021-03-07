@@ -111,7 +111,7 @@ parser MyParser(packet_in packet,
     }
 */
     state parse_udp_outer {
-        packet.extract(hdr.udp);
+        packet.extract(hdr.udp_outer);
         transition accept;
         }
     
