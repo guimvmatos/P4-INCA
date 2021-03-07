@@ -80,12 +80,14 @@ parser MyParser(packet_in packet,
     state start {
         transition parse_ethernet;
     }
+
     state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.etherType) {
             TYPE_IPV6: parse_ipv6_outer;
         }
     }
+
     state parse_ipv6_outer {
         packet.extract(hdr.ipv6_outer);
         transition select(hdr.ipv6_outer.next_hdr){
@@ -100,20 +102,11 @@ parser MyParser(packet_in packet,
         transition accept;
     }
 
-/* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira 
-    state check_srv6 {
-        transition select (packet.lookahead<srv6_t2>().last_entry){
-            1: parse_srv62;
-            2: parse_srv63;
-        }
-    }
-*/
     state parse_udp_outer {
         packet.extract(hdr.udp_outer);
         transition accept;
         }
-    
-    
+
 }
 /*************************************************************************
 ************   C H E C K S U M    V E R I F I C A T I O N   *************
@@ -128,65 +121,33 @@ control MyVerifyChecksum(inout headers hdr,
 control MyIngress (inout headers hdr,
                    inout metadata meta,
                    inout standard_metadata_t standard_metadata) {
+
     action drop() {
         mark_to_drop();
     }
+
     action ipv6_forward (macAddr_t dstAddr, egressSpec_t port) {
         standard_metadata.egress_spec = port;
-        /*hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;*/
         hdr.ethernet.dstAddr = dstAddr;
     }
 
-    /* to do: done: construir função srv6_pop: 
-    -> setar como invalido o srv63 -> feito
-    -> alterar ipv6_outer.next_hdr para hdr.srvr63.next_hdr -> feito
-    -> alterar ipv6_outer.dst_addr para parametro recebido pela tabela -> não é necessário pois o ultimo host srv6 aware já faz isto
-    -> exemplo em 5g srv6 bmv2 mininet no github -> utilizei como base, mas foi bem diferente
-    */
-/*
-    action srv6_pop (bit<8> hop) {
-        hdr.ipv6_outer.next_hdr = hdr.srv63.next_hdr;
-        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56; /*cada sid tem 16bytes. são 3 sids + 8 bytes do header
-        hdr.srv63.setInvalid();
-        hdr.ipv6_outer.hop_limit = hop;
-    }
-*/
-    /* to do: done: construir action build_srv63 no modo inline: 
-    -> segment_id1 será o endereço final <ipv6_outer.dst_addr>. -> s1 recebeu este valor
-    -> ipv6_outer.dst_addr será o primeiro ip da sid <s3>. -> feito
-    -> pegar exemplo de configuração de modo inline no linux -> feito
-    */
     action build_srv63(ip6Addr_t s2, ip6Addr_t s3) {
         hdr.srv63.setValid();
         hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
         hdr.srv63.hdr_ext_len =  LEN;
-        hdr.srv63.routing_type = TYPE_SR;
-        hdr.srv63.segment_left = SL;
-        hdr.srv63.last_entry = LE;
+        hdr.srv63.routing_type = 6;
+        hdr.srv63.segment_left = 2;
+        hdr.srv63.last_entry = 2;
         hdr.srv63.flags = 0;
         hdr.srv63.tag = 0;
-        hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr;;
+        hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr;
         hdr.srv63.segment_id2 = s2;
         hdr.srv63.segment_id3 = s3;
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.dst_addr = s3;
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
-        
     }
-/*
-    table pop {
-        key = {
-            hdr.ipv6_outer.dst_addr:exact;
-        }
-        actions = {
-            srv6_pop;
-            drop;
-        }
-        size = 1024;
-        default_action = drop();
 
-    }
-*/
     table ipv6_outer_lpm {
         key = {
             hdr.ipv6_outer.dst_addr:exact;
@@ -199,6 +160,7 @@ control MyIngress (inout headers hdr,
         size = 1024;
         default_action = drop();
     }
+    
     table teid_exact {
         key = {
             hdr.ipv6_outer.dst_addr:exact;
@@ -206,7 +168,6 @@ control MyIngress (inout headers hdr,
         actions = {
             build_srv63;
         }
-        /*size = 1024;*/
     }
 
     apply {
