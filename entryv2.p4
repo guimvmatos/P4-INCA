@@ -67,10 +67,8 @@ struct metadata {
 struct headers {
     ethernet_t              ethernet;
     ipv6_t                  ipv6_outer;
-    udp_t                   udp_outer;
     srv6_t3                 srv63;
-    udp_t                   udp;
-                  
+    udp_t                   udp_outer;
 }
 /*************************************************************************
 *********************** P A R S E R  ***********************************
