@@ -135,7 +135,7 @@ control MyIngress (inout headers hdr,
         hdr.srv63.setValid();
         hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
         hdr.srv63.hdr_ext_len =  LEN;
-        hdr.srv63.routing_type = 6;
+        hdr.srv63.routing_type = 4;
         hdr.srv63.segment_left = 2;
         hdr.srv63.last_entry = 2;
         hdr.srv63.flags = 0;
@@ -160,7 +160,7 @@ control MyIngress (inout headers hdr,
         size = 1024;
         default_action = drop();
     }
-    
+
     table teid_exact {
         key = {
             hdr.ipv6_outer.dst_addr:exact;
