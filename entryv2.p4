@@ -177,7 +177,6 @@ control MyEgress(inout headers hdr,
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.dst_addr = s3;
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
-        hdr.udp_outer.dport=100;
     }
 
     table ipv6_outer_lpm {
