@@ -134,7 +134,7 @@ control MyIngress (inout headers hdr,
     action build_srv63(ip6Addr_t s2, ip6Addr_t s3) {
         hdr.srv63.setValid();
         hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
-        hdr.srv63.hdr_ext_len =  6;
+        hdr.srv63.hdr_ext_len =  5;
         hdr.srv63.routing_type = 4;
         hdr.srv63.segment_left = 2;
         hdr.srv63.last_entry = 2;
