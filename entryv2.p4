@@ -185,14 +185,14 @@ control MyIngress (inout headers hdr,
 control MyEgress(inout headers hdr,
                  inout metadata meta,
                  inout standard_metadata_t standard_metadata) {
-    apply {  }
+    apply   { }
 }
 /*************************************************************************
 *************   C H E C K S U M    C O M P U T A T I O N   **************
 *************************************************************************/
 control MyComputeChecksum (inout headers hdr, 
                            inout metadata meta) {
-     apply { }
+     apply  { }
 }
 /*************************************************************************
 ***********************  D E P A R S E R  *******************************
