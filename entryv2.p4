@@ -117,7 +117,7 @@ parser MyParser(packet_in packet,
 
     state parse_udp_outer {
         packet.extract(hdr.udp_outer);
-        transition select(hdr.udp.dport){
+        transition select(hdr.udp_outer.dport){
             TYPE_GTP: parse_gtp;
         }
     }
