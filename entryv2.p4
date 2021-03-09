@@ -61,6 +61,18 @@ header udp_t {
     bit<16> checksum;
 }
 
+header gtp_t {
+    bit<3>  version_field_id;
+    bit<1>  proto_type_id;
+    bit<1>  spare;
+    bit<1>  extension_header_flag_id;
+    bit<1>  sequence_number_flag_id;
+    bit<1>  npdu_number_flag_id;
+    bit<8>  msgtype;
+    bit<16> msglen;
+    bit<32> teid;
+}
+
 struct metadata {
     bit<1> anything;
 }
@@ -69,6 +81,7 @@ struct headers {
     ipv6_t                  ipv6_outer;
     srv6_t3                 srv63;
     udp_t                   udp_outer;
+    gtp_t                   gtp;
 }
 /*************************************************************************
 *********************** P A R S E R  ***********************************
@@ -104,8 +117,15 @@ parser MyParser(packet_in packet,
 
     state parse_udp_outer {
         packet.extract(hdr.udp_outer);
-        transition accept;
+        transition select(hdr.ipv6_outer.next_hdr){
+            TYPE_GTP: parse_gtp;
         }
+    }
+
+    state parse_gtp {
+        packet.extract(hdr.gtp);
+        transition accept;
+    }
 
 }
 /*************************************************************************
@@ -205,6 +225,7 @@ control MyDeparser (packet_out packet,
         packet.emit(hdr.ipv6_outer);
         packet.emit(hdr.srv63);
         packet.emit(hdr.udp_outer);
+        packet.emit(hdr.gtp);
     }
 }
 /*************************************************************************
