@@ -30,6 +30,7 @@ header ethernet_t {
     macAddr_t srcAddr;
     bit<16> etherType;
 }
+
 header ipv6_t {
     bit<4> version;
     bit<8> traffic_class;
