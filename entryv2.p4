@@ -162,7 +162,23 @@ control MyEgress(inout headers hdr,
         hdr.ethernet.dstAddr = dstAddr;
     }
 
-
+    action build_srv63(ip6Addr_t s2, ip6Addr_t s3) {
+        hdr.srv63.setValid();
+        hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
+        hdr.srv63.hdr_ext_len =  6;
+        hdr.srv63.routing_type = 4;
+        hdr.srv63.segment_left = 2;
+        hdr.srv63.last_entry = 2;
+        hdr.srv63.flags = 0;
+        hdr.srv63.tag = 0;
+        hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr;
+        hdr.srv63.segment_id2 = s2;
+        hdr.srv63.segment_id3 = s3;
+        hdr.ipv6_outer.next_hdr = TYPE_SRV6;
+        hdr.ipv6_outer.dst_addr = s3;
+        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
+        hdr.udp_outer.dport=100;
+    }
 
     table ipv6_outer_lpm {
         key = {
