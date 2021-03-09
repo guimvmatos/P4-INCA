@@ -135,23 +135,6 @@
             }
         }
         ]
-    },
-    "egress::pop": {
-        "rules": [
-        {
-            "name": "sid_pop",
-            "match": 
-            { "ipv6_outer.dst_addr": { "value": "fc00::4" } },
-            "action": {
-                "type": "egress::srv6_pop",
-                "data": {
-                    "hop": { 
-                        "value": "64" 
-                    }
-                }
-            }
-        }
-        ]
     }
 }
 
