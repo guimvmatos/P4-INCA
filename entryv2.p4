@@ -244,13 +244,12 @@ control MyIngress (inout headers hdr,
         hdr.srv63.last_entry = LE;
         hdr.srv63.flags = 0;
         hdr.srv63.tag = 0;
-        hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr;;
+        hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr;
         hdr.srv63.segment_id2 = s2;
         hdr.srv63.segment_id3 = s3;
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.dst_addr = s3;
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
-        
     }
 
     /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
