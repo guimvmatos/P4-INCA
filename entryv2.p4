@@ -227,7 +227,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56; /*cada sid tem 16bytes. são 3 sids + 8 bytes do header*/
         hdr.srv63.setInvalid();
         hdr.ipv6_outer.hop_limit = hop;
-        /*hdr.gtp.spare = 1;*/
+        hdr.gtp.spare = 1;
     }
 
     /* to do: done: construir action build_srv63 no modo inline: 
@@ -300,7 +300,7 @@ control MyIngress (inout headers hdr,
     exemplo em 5g srv6 bmv2 mininet */
     
     apply {
-        if (!hdr.srv63.isValid() && hdr.gtp.spare == 0){
+        if (hdr.srv63.isValid() && hdr.srv63.segment_left == 2 && hdr.srv63.tag == 0){
             teid_exact.apply();
         } else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
             pop.apply();
