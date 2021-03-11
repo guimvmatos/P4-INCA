@@ -236,20 +236,20 @@ control MyIngress (inout headers hdr,
     -> pegar exemplo de configuração de modo inline no linux -> feito
     */
     action build_srv63(ip6Addr_t s2, ip6Addr_t s3) {
-        hdr.srv63.setValid();
-        hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
-        hdr.srv63.hdr_ext_len =  LEN;
-        hdr.srv63.routing_type = TYPE_SR;
-        hdr.srv63.segment_left = SL;
-        hdr.srv63.last_entry = LE;
-        hdr.srv63.flags = 0;
-        hdr.srv63.tag = 0;
-        hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr;
+        /*hdr.srv63.setValid(); Já foi criado antes da netronome
+        hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr; foi realizado na criação
+        hdr.srv63.hdr_ext_len =  LEN; foi realizado na criação
+        hdr.srv63.routing_type = TYPE_SR; foi realizado na criação
+        hdr.srv63.segment_left = SL; foi realizado na criação
+        hdr.srv63.last_entry = LE; foi realizado na criação
+        hdr.srv63.flags = 0;*/
+        hdr.srv63.tag = 1; /* para não entrar em loop*/
+        /*hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr; não precisarie mexer*/
         hdr.srv63.segment_id2 = s2;
         hdr.srv63.segment_id3 = s3;
-        hdr.ipv6_outer.next_hdr = TYPE_SRV6;
+        /*hdr.ipv6_outer.next_hdr = TYPE_SRV6;*/
         hdr.ipv6_outer.dst_addr = s3;
-        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
+        /*hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;*/
     }
 
     table ipv6_outer_lpm {
