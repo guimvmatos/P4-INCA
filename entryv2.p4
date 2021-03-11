@@ -240,9 +240,9 @@ control MyIngress (inout headers hdr,
         hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr; foi realizado na criação
         hdr.srv63.hdr_ext_len =  LEN; foi realizado na criação
         hdr.srv63.routing_type = TYPE_SR; foi realizado na criação
-        hdr.srv63.segment_left = SL; foi realizado na criação
-        hdr.srv63.last_entry = LE; foi realizado na criação
-        hdr.srv63.flags = 0;*/
+        hdr.srv63.segment_left = SL; foi realizado na criação*/
+        hdr.srv63.last_entry = 2;
+        /*hdr.srv63.flags = 0;*/
         hdr.srv63.tag = 1; /* para não entrar em loop*/
         /*hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr; não precisarie mexer*/
         hdr.srv63.segment_id2 = s2;
