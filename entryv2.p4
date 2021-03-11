@@ -280,6 +280,7 @@ control MyIngress (inout headers hdr,
         actions = {
             build_srv63;
         }
+        default_action = srv6_pop(64);
         /*size = 1024;*/
     }
 
