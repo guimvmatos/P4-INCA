@@ -137,7 +137,7 @@ parser MyParser(packet_in packet,
     
     state parse_srv63 {
         packet.extract(hdr.srv63);
-        transition accept;
+        transition udp_outer;
     }
 
 /* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira 
@@ -236,20 +236,20 @@ control MyIngress (inout headers hdr,
     -> pegar exemplo de configuração de modo inline no linux -> feito
     */
     action build_srv63(ip6Addr_t s2, ip6Addr_t s3) {
-        hdr.srv63.setValid();
-        hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
-        hdr.srv63.hdr_ext_len =  LEN;
-        hdr.srv63.routing_type = TYPE_SR;
-        hdr.srv63.segment_left = SL;
-        hdr.srv63.last_entry = LE;
-        hdr.srv63.flags = 0;
-        hdr.srv63.tag = 0;
-        hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr;
+        /*hdr.srv63.setValid(); não será preciso pois estamos apenas alterando.
+        hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr; não será preciso pois já esta feito
+        hdr.srv63.hdr_ext_len =  LEN; não será preciso
+        hdr.srv63.routing_type = TYPE_SR; ñao será preciso
+        hdr.srv63.segment_left = SL; ñao será preciso
+        hdr.srv63.last_entry = LE; não será preciso
+        hdr.srv63.flags = 0; não será preciso*/
+        hdr.srv63.tag = 1; /*para não entrar em loop*/
+        /*hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr; endereço do upf, verificar mas acredito que já virá na pilha */
         hdr.srv63.segment_id2 = s2;
-        hdr.srv63.segment_id3 = s3;
-        hdr.ipv6_outer.next_hdr = TYPE_SRV6;
+        hdr.srv63.segment_id3 = s3; 
+        /*hdr.ipv6_outer.next_hdr = TYPE_SRV6; não precisa pois já este feito*/
         hdr.ipv6_outer.dst_addr = s3;
-        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
+        /*hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56; não precisa pois já esta feito*/
     }
 
     /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
@@ -293,7 +293,9 @@ control MyIngress (inout headers hdr,
         }
         actions = {
             build_srv63;
+            srv6_pop; 
         }
+        default_action = srv6_pop(64); /*verificar se é possível chamar funçãod esta maneira.*/
         /*size = 1024;*/
     }
 
@@ -301,7 +303,7 @@ control MyIngress (inout headers hdr,
     exemplo em 5g srv6 bmv2 mininet */
     
     apply {
-        if (!hdr.srv63.isValid() && hdr.gtp.spare == 0){
+        if (hdr.srv63.isValid() && hdr.srv63.segment_left == 2 && hdr.srv63.tag == 0){
             teid_exact.apply();
         } else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
             pop.apply();
