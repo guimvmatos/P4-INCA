@@ -137,7 +137,7 @@ parser MyParser(packet_in packet,
     
     state parse_srv63 {
         packet.extract(hdr.srv63);
-        transition accept;
+        transition parse_udp_outer;
     }
 
 /* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira 
