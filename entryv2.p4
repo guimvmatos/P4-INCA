@@ -137,7 +137,7 @@ parser MyParser(packet_in packet,
     
     state parse_srv63 {
         packet.extract(hdr.srv63);
-        transition udp_outer;
+        transition accept;
     }
 
 /* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira 
@@ -236,17 +236,17 @@ control MyIngress (inout headers hdr,
     -> pegar exemplo de configuração de modo inline no linux -> feito
     */
     action build_srv63(ip6Addr_t s2, ip6Addr_t s3) {
-        /dr.srv63.setValid();
+        hdr.srv63.setValid();
         hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
         hdr.srv63.hdr_ext_len =  LEN;
         hdr.srv63.routing_type = TYPE_SR;
         hdr.srv63.segment_left = SL;
         hdr.srv63.last_entry = LE;
-        hdr.srv63.flags = 0; 
-        hdr.srv63.tag = 1;
+        hdr.srv63.flags = 0;
+        hdr.srv63.tag = 0;
         hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr;
         hdr.srv63.segment_id2 = s2;
-        hdr.srv63.segment_id3 = s3; 
+        hdr.srv63.segment_id3 = s3;
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.dst_addr = s3;
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
@@ -293,9 +293,7 @@ control MyIngress (inout headers hdr,
         }
         actions = {
             build_srv63;
-            srv6_pop; 
         }
-        default_action = srv6_pop(64); /*verificar se é possível chamar função esta maneira.*/
         /*size = 1024;*/
     }
 
@@ -303,7 +301,7 @@ control MyIngress (inout headers hdr,
     exemplo em 5g srv6 bmv2 mininet */
     
     apply {
-        if (hdr.srv63.isValid() && hdr.srv63.segment_left == 2 && hdr.srv63.tag == 0){
+        if (!hdr.srv63.isValid() && hdr.gtp.spare == 0){
             teid_exact.apply();
         } else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
             pop.apply();
