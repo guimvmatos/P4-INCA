@@ -227,7 +227,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56; /*cada sid tem 16bytes. são 3 sids + 8 bytes do header*/
         hdr.srv63.setInvalid();
         hdr.ipv6_outer.hop_limit = hop;
-        hdr.gtp.spare = 1;
+        /*hdr.gtp.spare = 1;*/
     }
 
     /* to do: done: construir action build_srv63 no modo inline: 
@@ -252,21 +252,6 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
     }
 
-    /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
-
-    table pop {
-        key = {
-            hdr.ipv6_outer.dst_addr:exact;
-        }
-        actions = {
-            srv6_pop;
-            drop;
-        }
-        size = 1024;
-        default_action = drop();
-
-    }
-
     table ipv6_outer_lpm {
         key = {
             hdr.ipv6_outer.dst_addr:exact;
@@ -279,6 +264,7 @@ control MyIngress (inout headers hdr,
         size = 1024;
         default_action = drop();
     }
+
     table teid_exact {
         key = {
             hdr.gtp.teid: ternary;
@@ -295,6 +281,19 @@ control MyIngress (inout headers hdr,
             build_srv63;
         }
         /*size = 1024;*/
+    }
+
+    /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
+    table pop {
+        key = {
+            hdr.ipv6_outer.dst_addr:exact;
+        }
+        actions = {
+            srv6_pop;
+            drop;
+        }
+        size = 1024;
+        default_action = drop();
     }
 
     /* to do: done: configurar apply para chamar tabela my_sid se srv6 for válido e segment_left =0
