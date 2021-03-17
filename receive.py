@@ -13,6 +13,7 @@ from scapy.all import Packet, IPOption
 from scapy.all import ShortField, IntField, LongField, BitField, FieldListField, FieldLenField
 from scapy.all import IP, IPv6, TCP, UDP, Raw, Ether
 from scapy.layers.inet import _IPOption_HDR
+from scapy import all
 
 def get_if():
     ifs=get_if_list()
