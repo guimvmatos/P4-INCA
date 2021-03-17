@@ -11,7 +11,7 @@ import time
 from scapy.all import sniff, send, sendp, hexdump, get_if_list, get_if_hwaddr, hexdump, sr1,sr
 from scapy.all import Packet, IPOption
 from scapy.all import ShortField, IntField, LongField, BitField, FieldListField, FieldLenField
-from scapy.all import IP, IPv6, TCP, UDP, Raw, Ether
+from scapy.all import IP, IPv6, TCP, UDP, Raw, Ether, ICMPv6
 from scapy.layers.inet import _IPOption_HDR
 
 def get_if():
@@ -25,6 +25,19 @@ def get_if():
         print "Cannot find eth1 interface"
         exit(1)
     return iface
+
+class IPOption_MRI(IPOption):
+    name = "MRI"
+    option = 31
+    fields_desc = [ _IPOption_HDR,
+                    FieldLenField("length", None, fmt="B",
+                                  length_of="swids",
+                                  adjust=lambda pkt,l:l+4),
+                    ShortField("count", 0),
+                    FieldListField("swids",
+                                   [],
+                                   IntField("", 0),
+                                   length_from=lambda pkt:pkt.count*4) ]
                                 
 def handle_pkt(pkt):
     #if UDP in pkt and pkt[UDP].dport == 2152:
