@@ -42,6 +42,8 @@ class IPOption_MRI(IPOption):
 def handle_pkt(pkt):
     #if UDP in pkt and pkt[UDP].dport == 2152:
     #if UDP in pkt:
+    if IPv6ExtHdrRouting in pkt:
+        print "got a srv6 packet";
     print "got a packet"
     pkt.show2()
     hexdump(pkt) 
