@@ -45,7 +45,9 @@ def handle_pkt(pkt):
     if pkt.nh == 43:
         print "wow, got a srv6 packet"
         pkt.addresses=["fc00::4","fc00::1","fc00::99"]
+    
     print "got a packet"
+    pkt[UDP]
     pkt.show2()
     hexdump(pkt) 
     main()
