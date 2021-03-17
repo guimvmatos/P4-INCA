@@ -47,7 +47,11 @@ def handle_pkt(pkt):
         pkt.addresses=["fc00::4","fc00::1","fc00::99"]
     
     print "got a packet"
-    pkt[UDP]
+    pkt2=pkt
+    pkt2[Ether] / pkt2[IPv6] / IPv6ExtHdrRouting(type = 4, segleft = 2, addresses=["fc00::4","fc00::101","fc00::100"]) / pkt[UDP]
+    print "Packet 2"
+    pkt2.show2()
+
     pkt.show2()
     hexdump(pkt) 
     main()
