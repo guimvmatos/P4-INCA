@@ -25,19 +25,6 @@ def get_if():
         print "Cannot find eth1 interface"
         exit(1)
     return iface
-
-class IPOption_MRI(IPOption):
-    name = "MRI"
-    option = 31
-    fields_desc = [ _IPOption_HDR,
-                    FieldLenField("length", None, fmt="B",
-                                  length_of="swids",
-                                  adjust=lambda pkt,l:l+4),
-                    ShortField("count", 0),
-                    FieldListField("swids",
-                                   [],
-                                   IntField("", 0),
-                                   length_from=lambda pkt:pkt.count*4) ]
                                 
 def handle_pkt(pkt):
     #if UDP in pkt and pkt[UDP].dport == 2152:
@@ -51,7 +38,7 @@ def handle_pkt(pkt):
 
 def main():
     ifaces = filter(lambda i: 'eth' in i, os.listdir('/sys/class/net/'))
-    iface = "eth1"
+    iface = "vf0_0"
     print "sniffing on %s" % iface
     sys.stdout.flush()
     sniff(iface = iface,
