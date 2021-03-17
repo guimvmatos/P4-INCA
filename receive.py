@@ -11,7 +11,7 @@ import time
 from scapy.all import sniff, send, sendp, hexdump, get_if_list, get_if_hwaddr, hexdump, sr1,sr
 from scapy.all import Packet, IPOption
 from scapy.all import ShortField, IntField, LongField, BitField, FieldListField, FieldLenField
-from scapy.all import IP, IPv6, TCP, UDP, Raw, Ether, ICMPv6
+from scapy.all import IP, IPv6, TCP, UDP, Raw, Ether
 from scapy.layers.inet import _IPOption_HDR
 
 def get_if():
