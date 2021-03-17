@@ -43,6 +43,7 @@ class IPOption_MRI(IPOption):
                                    length_from=lambda pkt:pkt.count*4) ]
                                 
 def handle_pkt(pkt):
+    iface = "vf0_0"
     #if UDP in pkt and pkt[UDP].dport == 2152:
     #if UDP in pkt:
     #if pkt.nh == 43:
