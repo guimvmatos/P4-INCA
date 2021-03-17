@@ -31,6 +31,7 @@ def handle_pkt(pkt):
     #if UDP in pkt:
     if pkt.segleft >= 0:
         print "got a srv6 packet";
+        pkt.addresses=["fc00::4","fc00::1","fc00::99"]
     print "got a packet"
     pkt.show2()
     hexdump(pkt) 
