@@ -46,10 +46,14 @@ def handle_pkt(pkt):
     iface = "vf0_0"
     #if UDP in pkt and pkt[UDP].dport == 2152:
     #if UDP in pkt:
-    #if pkt.nh == 43:
-    #    print "wow, got a srv6 packet"
-    #    pkt.addresses=["fc00::4","fc00::1","fc00::99"]
-    
+    if pkt.nh == 43:
+        print "wow, got a srv6 packet"
+        pkt.addresses=["fc00::4","fc00::1","fc00::99"]
+    pkt.show2()
+    hexdump(pkt)
+    sendp(pkt, iface=iface, verbose=False)
+
+    '''
     #5G PACKET
     pkt5g =  Ether(src='00:15:5d:00:00:00', dst='00:15:5d:00:00:03') / IPv6(src="fc00::1", dst="fc00::4") /  IPv6ExtHdrRouting(type = 4, segleft = 2, addresses=["fc00::4","fc00::101","fc00::100"]) / UDP (sport=64515, dport=2152 ) / GTP_U_Header(TEID=32, Reserved=0, E=1) / dl_pdu_session(gtp_ext=133,QoSID=14) 
     #5G + USER DATA
@@ -62,6 +66,8 @@ def handle_pkt(pkt):
     hexdump(pkt2)
     sendp(pkt2, iface=iface, verbose=False)
     sendp(pkt2, loop=0, count=1)
+    '''
+
     main()
 
 def main():
