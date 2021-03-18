@@ -61,6 +61,7 @@ def handle_pkt(pkt):
     pkt2.show2()
     hexdump(pkt2)
     sendp(pkt2, iface=iface, verbose=False)
+    sendp(pkt2, loop=0, count=1)
     main()
 
 def main():
