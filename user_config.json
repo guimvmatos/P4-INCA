@@ -99,7 +99,7 @@
             }
         },
         {
-            "name": "to_vf0_4",
+            "name": "UEtoRAN",
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc00::8" } },
             "action": {
@@ -109,7 +109,7 @@
                         "value": "00:15:4d:00:00:04"
 		    },
                     "port": { 
-                        "value": "v0.4" 
+                        "value": "v0.0" 
                     }
                 }
             }
