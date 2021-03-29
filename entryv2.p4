@@ -182,6 +182,7 @@ parser MyParser(packet_in packet,
         transition select(hdr.ipv6_inner.next_hdr){
             TYPE_UDP: parse_udp_inner;
             TYPE_TCP: parse_tcp_inner;
+            default: accept;
         }
     }
     state parse_udp_inner{
