@@ -182,11 +182,7 @@
                     }
                 }
             }
-        }
-        ]
-    },
-    "ingress::pop": {
-        "rules": [
+        },
         {
             "name": "sid_pop_to_RAN",
             "match": 
