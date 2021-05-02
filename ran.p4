@@ -298,7 +298,7 @@ control MyIngress (inout headers hdr,
         default_action = drop();
     }
 
-        table ipv6_inner_lpm { /*todo parei aqui, falta, criar lógica no apply, rever os matches e todas as tabelas*/
+    table ipv6_inner_lpm { /*todo parei aqui, falta, criar lógica no apply, rever os matches e todas as tabelas*/
         key = {
             hdr.ipv6_outer.dst_addr:exact;
         }
