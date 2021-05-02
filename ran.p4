@@ -29,6 +29,7 @@ header ethernet_t {
     macAddr_t srcAddr;
     bit<16> etherType;
 }
+
 header ipv6_t {
     bit<4> version;
     bit<8> traffic_class;
@@ -119,10 +120,27 @@ parser MyParser(packet_in packet,
     state start {
         transition parse_ethernet;
     }
+
+    
+/* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira 
+    state check_srv6 {
+        transition select (packet.lookahead<srv6_t2>().last_entry){
+            1: parse_srv62;
+            2: parse_srv63;
+        }
+    }
+*/
     state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.etherType) {
-            TYPE_IPV6: parse_ipv6_outer;
+            TYPE_IPV6: check_ipv6_inner_or_outer;
+        }
+    }
+
+    state check_ipv6_inner_or_outer{
+        transition select (packet.lookahead<ipv6_t>().traffic_class){
+            123: parse_ipv6_outer;
+            _: parse_ipv6_inner;
         }
     }
     state parse_ipv6_outer {
@@ -268,6 +286,19 @@ control MyIngress (inout headers hdr,
     }
 
     table ipv6_outer_lpm {
+        key = {
+            hdr.ipv6_outer.dst_addr:exact;
+        }
+        actions = {
+            ipv6_forward;
+            drop;
+            NoAction;
+        }
+        size = 1024;
+        default_action = drop();
+    }
+
+        table ipv6_inner_lpm { /*todo parei aqui, falta, criar lógica no apply, rever os matches e todas as tabelas*/
         key = {
             hdr.ipv6_outer.dst_addr:exact;
         }
