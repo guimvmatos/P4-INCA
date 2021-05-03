@@ -13,6 +13,7 @@ const bit<8> num_segments2 = 2;
 const bit<8> num_segments3 = 3;
 /* will be in srv6 header*/
 const bit<8> TYPE_SR = 4;
+const bit<4> TYPE_IP6 = 6;
 const bit<8> SL = 2;
 const bit<8> LE = 2;
 const bit<8> LEN = 6;
@@ -21,7 +22,7 @@ const bit<8> LEN = 6;
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
 *************************************************************************/
-typedef bit<16> egressSpec_t;
+typedef bit<9> egressSpec_t; /*todo mudar para 9 na netronome*/
 typedef bit<48> macAddr_t;
 typedef bit<128> ip6Addr_t;
 header ethernet_t {
@@ -29,7 +30,6 @@ header ethernet_t {
     macAddr_t srcAddr;
     bit<16> etherType;
 }
-
 header ipv6_t {
     bit<4> version;
     bit<8> traffic_class;
@@ -120,16 +120,6 @@ parser MyParser(packet_in packet,
     state start {
         transition parse_ethernet;
     }
-
-    
-/* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira 
-    state check_srv6 {
-        transition select (packet.lookahead<srv6_t2>().last_entry){
-            1: parse_srv62;
-            2: parse_srv63;
-        }
-    }
-*/
     state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.etherType) {
@@ -140,7 +130,7 @@ parser MyParser(packet_in packet,
     state check_ipv6_inner_or_outer{
         transition select (packet.lookahead<ipv6_t>().traffic_class){
             123: parse_ipv6_outer;
-            _: parse_ipv6_inner;
+            default: parse_ipv6_inner;
         }
     }
     state parse_ipv6_outer {
@@ -153,12 +143,6 @@ parser MyParser(packet_in packet,
             default: accept; 
         }
     }
-    
-    /*
-    state parse_srv63 {
-        packet.extract(hdr.srv63);
-        transition parse_udp_outer;
-    }*/
 
     state parse_udp_outer {
         packet.extract(hdr.udp);
@@ -167,11 +151,6 @@ parser MyParser(packet_in packet,
             default: accept; /*se não 5g, é uplink*/
         }
     }
-    /* não vai fazer diferença
-    state parse_tcp_outer {
-        packet.extract(hdr.tcp);
-        transition accept;
-    }*/
     
     state parse_gtp {
         packet.extract(hdr.gtp);
@@ -190,6 +169,7 @@ parser MyParser(packet_in packet,
         packet.extract(hdr.pdu_container);
         transition parse_ipv6_inner;
     }
+
     state parse_ipv6_inner{
         packet.extract(hdr.ipv6_inner);
         transition select(hdr.ipv6_inner.next_hdr){
@@ -223,42 +203,26 @@ control MyIngress (inout headers hdr,
     action drop() {
         mark_to_drop();
     }
-    action ipv6_forward (macAddr_t dstAddr, egressSpec_t port) {
+
+    action ipv6_forward (macAddr_t srcAddr, macAddr_t dstAddr, egressSpec_t port) {
         standard_metadata.egress_spec = port;
-        /*hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;*/
+        hdr.ethernet.srcAddr = srcAddr;
         hdr.ethernet.dstAddr = dstAddr;
-        /*aqui acho bacana pensar melhor e tentar preenchar os campos passando parametros da tabela*/
     }
 
-    /* to do: done: construir função srv6_pop: 
-    -> setar como invalido o srv63 -> feito
-    -> alterar ipv6_outer.next_hdr para hdr.srvr63.next_hdr -> feito
-    -> alterar ipv6_outer.dst_addr para parametro recebido pela tabela -> não é necessário pois o ultimo host srv6 aware já faz isto
-    -> exemplo em 5g srv6 bmv2 mininet no github -> utilizei como base, mas foi bem diferente
-    */
 
-    action core5G_pop (bit<8> hop) {
+    action core5g_pop (bit<8> hop) {
+        hdr.ipv6_outer.hop_limit = hop;
         hdr.ipv6_outer.setInvalid();
         hdr.udp.setInvalid();
         hdr.gtp.setInvalid();
-        hdr.gtp_ext_t.setInvalid();
+        hdr.gtp_ext.setInvalid();
         hdr.pdu_container.setInvalid();
-        /*parametro?*/
+        hdr.ipv6_outer.hop_limit = hop;
     }
 
-    /* to do: done: construir action build_srv63 no modo inline: 
-    -> segment_id1 será o endereço final <ipv6_outer.dst_addr>. -> s1 recebeu este valor
-    -> ipv6_outer.dst_addr será o primeiro ip da sid <s3>. -> feito
-    -> pegar exemplo de configuração de modo inline no linux -> feito
-    */
-    action core5G_build (ip6Addr_t s2, ip6Addr_t s3) {
-        /* terei que construir
-        ipv6_outer
-        srv63
-        udp
-        gtp
-        gtp_ext
-        pdu_container*/
+
+    action core5g_build (ip6Addr_t s2, ip6Addr_t s3) {
         hdr.ipv6_outer.setValid();
         hdr.srv63.setValid();
         hdr.udp.setValid();
@@ -266,23 +230,50 @@ control MyIngress (inout headers hdr,
         hdr.gtp_ext.setValid();
         hdr.pdu_container.setValid();
   
+        hdr.ipv6_outer.version = TYPE_IP6;
+        hdr.ipv6_outer.traffic_class =  123;
+        hdr.ipv6_outer.flow_label = 0;
+        hdr.ipv6_outer.payload_len = 180; /*valor com ping/*
+        hdr.ipv6_outer.next_hdr = TYPE_SRV6;
+        hdr.ipv6_outer.hot_limit = 64;
+        hdr.ipv6_outer.dst_addr = fc00::5;
+        hdr.ipv6_outer.src_addr = fc00::1;
         
 
-
-        /*validar os dados abaixo*/
-        hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr;
+        hdr.srv63.next_hdr = TYPE_UDP;
         hdr.srv63.hdr_ext_len =  LEN;
         hdr.srv63.routing_type = TYPE_SR;
         hdr.srv63.segment_left = SL;
         hdr.srv63.last_entry = 2;
         hdr.srv63.flags = 0;
         hdr.srv63.tag = 1;
-        hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr;
-        hdr.srv63.segment_id2 = s2;
-        hdr.srv63.segment_id3 = s3;
-        hdr.ipv6_outer.next_hdr = TYPE_SRV6;
-        hdr.ipv6_outer.dst_addr = s3;
-        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;
+        hdr.srv63.segment_id1 = fc00::5; /*(match fc00::1 -> fc00::1 e vice versa)*/
+        hdr.srv63.segment_id2 = s2; /*fc00::101*/
+        hdr.srv63.segment_id3 = s3; /*fc00::100*/
+
+        hdr.udp.sport = 64515;
+    	hdr.udp.dport = TYPE_GTP;
+    	hdr.udp.len = 124; /*valor com ping*/
+    	hdr.udp.checksum = 0;
+
+	    hdr.gtp.version_field_id = 1;
+	    hdr.gtp.proto_type_id = 1;
+	    hdr.gtp.spare = 0;
+	    hdr.gtp.extension_header_flag_id = 1;
+	    hdr.gtp.sequence_number_flag_id = 0;
+	    hdr.gtp.npdu_number_flag_id = 0;
+	    hdr.gtp.msgtype = 255 ;
+	    hdr.gtp.msglen = 0;
+	    hdr.gtp.teid = 32;
+
+		hdr.gtp_ext.next_extension = 133;
+
+		hdr.pdu_container.pdu_type = 1;
+		hdr.pdu_container.spare = 0;
+		hdr.pdu_container.rqi = 0;
+		hdr.pdu_container.qosid = 14;
+		hdr.pdu_container.padding = 0;
+
     }
 
     table ipv6_outer_lpm {
@@ -298,9 +289,10 @@ control MyIngress (inout headers hdr,
         default_action = drop();
     }
 
-    table ipv6_inner_lpm { /*todo parei aqui, falta, criar lógica no apply, rever os matches e todas as tabelas*/
+
+    table ipv6_inner_lpm { /*encaminha fc10::2 ou fc20::2 para final*/
         key = {
-            hdr.ipv6_outer.dst_addr:exact;
+            hdr.ipv6_inner.dst_addr:exact;
         }
         actions = {
             ipv6_forward;
@@ -313,7 +305,7 @@ control MyIngress (inout headers hdr,
 
     table uplink {
         key = {
-            hdr.ipv6_outer.src_addr:exact; /*endereço na ran: fc10::2/upf: fc20::2*/
+            hdr.ipv6_outer.src_addr:exact; /*endereço na ran: fc10::2  upf: fc20::2*/
         }
         actions = {
             core5g_build;
@@ -339,10 +331,13 @@ control MyIngress (inout headers hdr,
     apply {
         if (!hdr.gtp.isValid()){
             uplink.apply();
+            ipv6_outer_lpm.apply();
         } else if (hdr.gtp.isValid() && !hdr.srv63.isValid()){
             downlink.apply();
+            ipv6_inner_lpm.apply();
         }
-        ipv6_outer_lpm.apply();
+        
+        
     }
 }
 /************************************************************************
