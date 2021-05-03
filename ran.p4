@@ -233,7 +233,7 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.version = TYPE_IP6;
         hdr.ipv6_outer.traffic_class =  123;
         hdr.ipv6_outer.flow_label = 0;
-        hdr.ipv6_outer.payload_len = 180; /*valor com ping/*
+        hdr.ipv6_outer.payload_len = 180; /*valor com ping*/
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
         hdr.ipv6_outer.hot_limit = 64;
         hdr.ipv6_outer.dst_addr = fc00::5;
