@@ -222,7 +222,7 @@ control MyIngress (inout headers hdr,
     }
 
 
-    action core5g_build (ip6Addr_t s2, ip6Addr_t s3) {
+    action core5g_build (ip6Addr_t s1, ip6Addr_t s2, ip6Addr_t s3, ip6Addr_t src) {
         hdr.ipv6_outer.setValid();
         hdr.srv63.setValid();
         hdr.udp.setValid();
@@ -233,11 +233,11 @@ control MyIngress (inout headers hdr,
         hdr.ipv6_outer.version = TYPE_IP6;
         hdr.ipv6_outer.traffic_class =  123;
         hdr.ipv6_outer.flow_label = 0;
-        hdr.ipv6_outer.payload_len = 180; /*valor com ping*/
+        hdr.ipv6_outer.payload_len = 80 + hdr.ipv6_inner.payload_len; /*180 -> valor com ping*/
         hdr.ipv6_outer.next_hdr = TYPE_SRV6;
-        hdr.ipv6_outer.hot_limit = 64;
-        hdr.ipv6_outer.dst_addr = fc00::5;
-        hdr.ipv6_outer.src_addr = fc00::1;
+        hdr.ipv6_outer.hop_limit = 64;
+        hdr.ipv6_outer.dst_addr = s1;
+        hdr.ipv6_outer.src_addr = src;
         
 
         hdr.srv63.next_hdr = TYPE_UDP;
@@ -247,13 +247,13 @@ control MyIngress (inout headers hdr,
         hdr.srv63.last_entry = 2;
         hdr.srv63.flags = 0;
         hdr.srv63.tag = 1;
-        hdr.srv63.segment_id1 = fc00::5; /*(match fc00::1 -> fc00::1 e vice versa)*/
+        hdr.srv63.segment_id1 = s1; /*(match fc00::1 -> fc00::1 e vice versa)*/
         hdr.srv63.segment_id2 = s2; /*fc00::101*/
         hdr.srv63.segment_id3 = s3; /*fc00::100*/
 
         hdr.udp.sport = 64515;
     	hdr.udp.dport = TYPE_GTP;
-    	hdr.udp.len = 124; /*valor com ping*/
+    	hdr.udp.len = 12 + hdr.ipv6_inner.payload_len;
     	hdr.udp.checksum = 0;
 
 	    hdr.gtp.version_field_id = 1;
@@ -305,7 +305,7 @@ control MyIngress (inout headers hdr,
 
     table uplink {
         key = {
-            hdr.ipv6_outer.src_addr:exact; /*endereço na ran: fc10::2  upf: fc20::2*/
+            hdr.ipv6_inner.src_addr:exact; /*endereço na ran: fc10::2  upf: fc20::2*/
         }
         actions = {
             core5g_build;
@@ -353,7 +353,20 @@ control MyEgress(inout headers hdr,
 *************************************************************************/
 control MyComputeChecksum (inout headers hdr, 
                            inout metadata meta) {
-     apply { }
+    apply { 
+        update_checksum(
+            hdr.udp.isValid(),
+                                           { hdr.ipv6_outer.src_addr,
+                                             hdr.ipv6_outer.dst_addr,
+                                             8w0,
+                                             hdr.ipv6_outer.next_hdr,
+                                             hdr.udp.sport,
+                                             hdr.udp.dport,
+                                             hdr.udp.len
+                                           },
+                                           hdr.udp.checksum,
+                                           HashAlgorithm.csum16);
+                                    }
 }
 /*************************************************************************
 ***********************  D E P A R S E R  *******************************
