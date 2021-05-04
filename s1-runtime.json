@@ -1,0 +1,107 @@
+{
+  "target": "bmv2",
+  "p4info": "build/entry.p4info",
+  "bmv2_json": "build/entry.json",
+  "table_entries": [
+    {
+      "table": "MyIngress.ipv6_outer_lpm",
+      "default_action": true,
+      "action_name": "MyIngress.drop",
+      "action_params": { }
+    },
+    {
+      "table": "MyIngress.ipv6_outer_lpm",
+      "match": {
+        "hdr.ipv6_outer.dst_addr": ["fc00::1", 128]
+      },
+      "action_name": "MyIngress.ipv6_forward",
+      "action_params": {
+      	"srcAddr": "00:15:4d:00:00:00",
+        "dstAddr": "00:15:4d:00:00:04",
+        "port": 1
+      }
+    },
+    {
+      "table": "MyIngress.ipv6_outer_lpm",
+      "match": {
+        "hdr.ipv6_outer.dst_addr": ["fc00::5", 128]
+      },
+      "action_name": "MyIngress.ipv6_forward",
+      "action_params": {
+      	"srcAddr": "00:15:4d:00:00:04",
+        "dstAddr": "00:15:4d:00:00:00",
+        "port": 1
+      }
+    },
+    {
+      "table": "MyIngress.ipv6_inner_lpm",
+      "match": {
+        "hdr.ipv6_outer.dst_addr": ["fc10::2", 128]
+      },
+      "action_name": "MyIngress.ipv6_forward",
+      "action_params": {
+      	"srcAddr": "08:00:27:dd:dd:dd",
+        "dstAddr": "08:00:27:aa:aa:aa",
+        "port": 1
+      }
+    },
+    {
+      "table": "MyIngress.ipv6_inner_lpm",
+      "match": {
+        "hdr.ipv6_outer.dst_addr": ["fc20::2", 128]
+      },
+      "action_name": "MyIngress.ipv6_forward",
+      "action_params": {
+      	"srcAddr": "08:00:27:aa:aa:aa",
+        "dstAddr": "08:00:27:dd:dd:dd",
+        "port": 1
+      }
+    },
+    {
+      "table": "MyIngress.uplink",
+      "match": {
+        "hdr.ipv6_outer.src_addr": ["fc10::2", 128]
+      },
+      "action_name": "MyIngress.core5g_build",
+      "action_params": {
+        "s3": "fc00::100",
+        "s2": "fc00::101",
+        "s1": "fc00::5",
+        "src": "fc00::1"
+      }
+    },
+    {
+      "table": "MyIngress.uplink",
+      "match": {
+        "hdr.ipv6_outer.src_addr": ["fc20::2", 128]
+      },
+      "action_name": "MyIngress.core5g_build",
+      "action_params": {
+        "s3": "fc00::100",
+        "s2": "fc00::101",
+        "s1": "fc00::1",
+        "src": "fc00::5"
+      }
+    },
+    {
+      "table": "MyIngress.downlink",
+      "match": {
+        "hdr.ipv6_outer.dst": ["fc00::1", 128]
+      },
+      "action_name": "MyIngress.core5g_pop",
+      "action_params": {
+        "hop": "64"
+      }
+    },
+    {
+      "table": "MyIngress.downlink",
+      "match": {
+        "hdr.ipv6_outer.dst": ["fc00::5", 128]
+      },
+      "action_name": "MyIngress.core5g_pop",
+      "action_params": {
+        "hop": "64"
+    }
+    }
+  ]
+}

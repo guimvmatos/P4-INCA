@@ -1,0 +1,16 @@
+table_add uplink core5g_build fc10::2 => fc00::5 fc00::101 fc00::100 fc00::1
+table_add uplink core5g_build fc20::2 => fc00::1 fc00::101 fc00::100 fc00::5
+
+table_add ipv6_inner_lpm ipv6_forward fc10::2 => 08:00:27:dd:dd:dd 08:00:27:aa:aa:aa 1
+table_add ipv6_inner_lpm ipv6_forward fc20::2 => 08:00:27:aa:aa:aa 08:00:27:dd:dd:dd 1
+
+table_add downlink core5g_pop fc00::1 => 64
+table_add downlink core5g_pop fc00::5 => 64
+
+table_add ipv6_outer_lpm ipv6_forward fc00::1 => 00:15:4d:00:00:00 00:15:4d:00:00:04 2
+table_add ipv6_outer_lpm ipv6_forward fc00::5 => 00:15:4d:00:00:04 00:15:4d:00:00:00 2
+
+
+
+
+
