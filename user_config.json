@@ -145,7 +145,39 @@
                     }
                 }
             }
-        }
+        },
+    {
+            "name": "to_vf0_6_RAN",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc20::2" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "08:00:27:dd:dd:dd"
+		    },
+                    "port": { 
+                        "value": "v0.6" 
+                    }
+                }
+            }
+        },
+        {
+            "name": "to_vf0_5_UPF",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc10::2" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "08:00:27:aa:aa:aa"
+		    },
+                    "port": { 
+                        "value": "v0.5" 
+                    }
+                }
+            }
+            }
         ]
      },
      "ingress::teid_exact": {
