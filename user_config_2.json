@@ -210,7 +210,7 @@
                 "type": "ingress::build_srv63",
                 "data": {
                     "s2": { 
-                        "value": "fcf0:23::6006" 
+                        "value": "fcf0:23::9009" 
                     },
                     "s3": { 
                         "value": "fcf0:12::100" 
