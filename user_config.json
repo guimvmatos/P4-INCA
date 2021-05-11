@@ -197,12 +197,8 @@
                     }
                 }
             }
-        }
-        ]
     },
-    "ingress::teid_exact": {
-        "rules": [
-        {
+    {
             "name": "clientNmap",
             "match": 
                 { "ipv6_inner.src_addr" : { "value" : "fc10::3" } },
@@ -218,7 +214,7 @@
                 }
             }
         }
-        ]
+    ]
     },
     "ingress::pop": {
         "rules": [
