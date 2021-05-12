@@ -201,7 +201,7 @@
         {
             "name": "clientNmap",
             "match": 
-                { "ipv6_inner.src_addr" : { "value" : "fc10::3" } },
+                { "gtp.teid" : { "value" : "33" } },
             "action": {
                 "type": "ingress::build_srv63",
                 "data": {
