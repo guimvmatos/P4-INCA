@@ -66,6 +66,22 @@
                 }
             }
         },
+        {
+            "name": "to_vf0_2_srv6",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fcf0:23::9009" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:03"
+		    },
+                    "port": { 
+                        "value": "v0.3" 
+                    }
+                }
+            }
+        },
 	{
             "name": "to_vf0_2",
             "match": 
@@ -197,12 +213,8 @@
                     }
                 }
             }
-        }
-        ]
     },
-    "ingress::teid_exact": {
-        "rules": [
-        {
+    {
             "name": "clientNmap",
             "match": 
                 { "ipv6_inner.src_addr" : { "value" : "fc10::3" } },
