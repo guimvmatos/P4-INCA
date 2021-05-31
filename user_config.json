@@ -196,6 +196,42 @@
             }
         ]
      },
+     "ingress::teid_exact": {
+        "rules": [
+        {
+            "name": "teid_32",
+            "match": 
+                { "gtp.teid" : { "value" : "32" } },
+            "action": {
+                "type": "ingress::build_srv63",
+                "data": {
+                    "s2": { 
+                        "value": "fcf0:23::6006" 
+                    },
+                    "s3": { 
+                        "value": "fcf0:12::100" 
+                    }
+                }
+            }
+    },
+    {
+            "name": "clientNmap",
+            "match": 
+                { "ipv6_inner.src_addr" : { "value" : "fc10::10" } },
+            "action": {
+                "type": "ingress::build_srv63",
+                "data": {
+                    "s2": { 
+                        "value": "fcf0:23::6006" 
+                    },
+                    "s3": { 
+                        "value": "fcf0:12::100" 
+                    }
+                }
+            }
+        }
+    ]
+    },
     "ingress::pop": {
         "rules": [
         {
