@@ -1,13 +1,13 @@
 {
 "tables": {
-    "ingress::ipv6_outer_lpm": {
+    "egress::ipv6_outer_lpm": {
         "rules": [
         {
             "name": "to_vf0_0",
             "match": 
                 { "ipv6_outer.dst_addr" : { "value" : "fc00::1" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:00" 
@@ -23,7 +23,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc00::2" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:01"
@@ -39,7 +39,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fcf0:12::100" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:01"
@@ -55,7 +55,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fcf0:23::6006" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:02"
@@ -71,7 +71,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fcf0:23::9009" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:03"
@@ -87,7 +87,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc00::3" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:02"
@@ -103,7 +103,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc00::4" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:03"
@@ -119,7 +119,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc00::5" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:04"
@@ -135,7 +135,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc00::8" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:05"
@@ -151,7 +151,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc00::9" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "00:15:4d:00:00:06"
@@ -167,7 +167,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc20::2" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "08:00:27:dd:dd:dd"
@@ -183,7 +183,7 @@
             "match": 
                 { "ipv6_outer.dst_addr": { "value": "fc10::2" } },
             "action": {
-                "type": "ingress::ipv6_forward",
+                "type": "egress::ipv6_forward",
                 "data": {
                     "dstAddr": { 
                         "value": "08:00:27:aa:aa:aa"
@@ -232,14 +232,14 @@
         }
     ]
     },
-    "ingress::pop": {
+    "egress::pop": {
         "rules": [
         {
             "name": "sid_pop_to_UPF",
             "match": 
             { "ipv6_outer.dst_addr": { "value": "fc00::5" } },
             "action": {
-                "type": "ingress::srv6_pop",
+                "type": "egress::srv6_pop",
                 "data": {
                     "hop": { 
                         "value": "64" 
@@ -252,7 +252,7 @@
             "match": 
             { "ipv6_outer.dst_addr": { "value": "fc00::1" } },
             "action": {
-                "type": "ingress::srv6_pop",
+                "type": "egress::srv6_pop",
                 "data": {
                     "hop": { 
                         "value": "64" 

@@ -207,29 +207,6 @@ control MyVerifyChecksum(inout headers hdr,
 control MyIngress (inout headers hdr,
                    inout metadata meta,
                    inout standard_metadata_t standard_metadata) {
-    action drop() {
-        mark_to_drop();
-    }
-    action ipv6_forward (macAddr_t dstAddr, egressSpec_t port) {
-        standard_metadata.egress_spec = port;
-        /*hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;*/
-        hdr.ethernet.dstAddr = dstAddr;
-    }
-
-    /* to do: done: construir função srv6_pop: 
-    -> setar como invalido o srv63 -> feito
-    -> alterar ipv6_outer.next_hdr para hdr.srvr63.next_hdr -> feito
-    -> alterar ipv6_outer.dst_addr para parametro recebido pela tabela -> não é necessário pois o ultimo host srv6 aware já faz isto
-    -> exemplo em 5g srv6 bmv2 mininet no github -> utilizei como base, mas foi bem diferente
-    */
-
-    action srv6_pop (bit<8> hop) {
-        hdr.ipv6_outer.next_hdr = hdr.srv63.next_hdr;
-        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56; /*cada sid tem 16bytes. são 3 sids + 8 bytes do header*/
-        hdr.srv63.setInvalid();
-        hdr.ipv6_outer.hop_limit = hop;
-        hdr.gtp.spare = 1;
-    }
 
     /* to do: done: construir action build_srv63 no modo inline: 
     -> segment_id1 será o endereço final <ipv6_outer.dst_addr>. -> s1 recebeu este valor
@@ -253,19 +230,6 @@ control MyIngress (inout headers hdr,
         /*hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;*/
     }
 
-    table ipv6_outer_lpm {
-        key = {
-            hdr.ipv6_outer.dst_addr:exact;
-        }
-        actions = {
-            ipv6_forward;
-            drop;
-            NoAction;
-        }
-        size = 1024;
-        default_action = drop();
-    }
-
     table teid_exact {
         key = {
             hdr.gtp.teid: ternary;
@@ -280,10 +244,68 @@ control MyIngress (inout headers hdr,
         }
         actions = {
             build_srv63;
-            srv6_pop;
+            /*srv6_pop;*/
         }
-        default_action = srv6_pop(64);
+        /*default_action = srv6_pop(64);*/
         /*size = 1024;*/
+    }
+
+
+
+    /* to do: done: configurar apply para chamar tabela my_sid se srv6 for válido e segment_left =0
+    exemplo em 5g srv6 bmv2 mininet */
+    
+    apply {
+        if (hdr.srv63.isValid() && hdr.srv63.segment_left == 2 && hdr.srv63.tag == 0){
+            teid_exact.apply();
+        } /*else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
+            pop.apply();
+        }
+        ipv6_outer_lpm.apply();*/
+    }
+}
+/************************************************************************
+****************  E G R E S S   P R O C E S S I N G   *******************
+*************************************************************************/
+control MyEgress(inout headers hdr,
+                 inout metadata meta,
+                 inout standard_metadata_t standard_metadata) {
+
+    action drop() {
+        mark_to_drop();
+    }
+
+    action ipv6_forward (macAddr_t dstAddr, egressSpec_t port) {
+        standard_metadata.egress_spec = port;
+        /*hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;*/
+        hdr.ethernet.dstAddr = dstAddr;
+    }
+
+    /* to do: done: construir função srv6_pop: 
+    -> setar como invalido o srv63 -> feito
+    -> alterar ipv6_outer.next_hdr para hdr.srvr63.next_hdr -> feito
+    -> alterar ipv6_outer.dst_addr para parametro recebido pela tabela -> não é necessário pois o ultimo host srv6 aware já faz isto
+    -> exemplo em 5g srv6 bmv2 mininet no github -> utilizei como base, mas foi bem diferente
+    */
+    action srv6_pop (bit<8> hop) {
+        hdr.ipv6_outer.next_hdr = hdr.srv63.next_hdr;
+        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56; /*cada sid tem 16bytes. são 3 sids + 8 bytes do header*/
+        hdr.srv63.setInvalid();
+        hdr.ipv6_outer.hop_limit = hop;
+        hdr.gtp.spare = 1;
+    }
+
+    table ipv6_outer_lpm {
+        key = {
+            hdr.ipv6_outer.dst_addr:exact;
+        }
+        actions = {
+            ipv6_forward;
+            drop;
+            NoAction;
+        }
+        size = 1024;
+        default_action = drop();
     }
 
     /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
@@ -299,25 +321,15 @@ control MyIngress (inout headers hdr,
         default_action = drop();
     }
 
-    /* to do: done: configurar apply para chamar tabela my_sid se srv6 for válido e segment_left =0
-    exemplo em 5g srv6 bmv2 mininet */
-    
-    apply {
-        if (hdr.srv63.isValid() && hdr.srv63.segment_left == 2 && hdr.srv63.tag == 0){
-            teid_exact.apply();
-        } else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
+    apply {  
+        if (hdr.srv63.isValid()) {
             pop.apply();
         }
         ipv6_outer_lpm.apply();
     }
-}
-/************************************************************************
-****************  E G R E S S   P R O C E S S I N G   *******************
-*************************************************************************/
-control MyEgress(inout headers hdr,
-                 inout metadata meta,
-                 inout standard_metadata_t standard_metadata) {
-    apply {  }
+
+    
+    
 }
 /*************************************************************************
 *************   C H E C K S U M    C O M P U T A T I O N   **************
