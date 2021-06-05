@@ -327,8 +327,6 @@ control MyEgress(inout headers hdr,
         }
         ipv6_outer_lpm.apply();
     }
-
-    
     
 }
 /*************************************************************************
