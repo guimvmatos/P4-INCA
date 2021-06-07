@@ -273,10 +273,8 @@ control MyEgress(inout headers hdr,
         }
         actions = {
             srv6_pop;
-            drop;
         }
         size = 1024;
-        default_action = drop();
     }
 
     apply {  
