@@ -206,10 +206,10 @@
                 "type": "ingress::build_srv63",
                 "data": {
                     "s2": { 
-                        "value": "fcf0:23::6006" 
+                        "value": "fc00::5" 
                     },
                     "s3": { 
-                        "value": "fcf0:12::100" 
+                        "value": "fc00::5" 
                     }
                 }
             }
@@ -222,10 +222,10 @@
                 "type": "ingress::build_srv63",
                 "data": {
                     "s2": { 
-                        "value": "fcf0:23::6006" 
+                        "value": "fc00::5" 
                     },
                     "s3": { 
-                        "value": "fcf0:12::100" 
+                        "value": "fc00::5" 
                     }
                 }
             }
