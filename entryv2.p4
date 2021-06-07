@@ -1,17 +1,14 @@
 /* -*- P4_16 -*- */
 #include <core.p4>
 #include <v1model.p4>
-/* will be in udp header */
 const bit<16> TYPE_IPV6 = 0x86dd;
 const bit<16> TYPE_GTP = 2152;
-/* will be in ipv6 header*/
 const bit<8> TYPE_UDP = 17;
 const bit<8> TYPE_TCP = 6;
 const bit<8> TYPE_SRV6 = 43;
 const bit<8> pdu_container = 133;
 const bit<8> num_segments2 = 2;
 const bit<8> num_segments3 = 3;
-/* will be in srv6 header*/
 const bit<8> TYPE_SR = 4;
 const bit<8> SL = 2;
 const bit<8> LE = 2;
@@ -140,14 +137,6 @@ parser MyParser(packet_in packet,
         transition parse_udp_outer;
     }
 
-/* to do: lookahead ñao funcionará, me parece ser conta do tamanho do pacote. tentar outra maneira 
-    state check_srv6 {
-        transition select (packet.lookahead<srv6_t2>().last_entry){
-            1: parse_srv62;
-            2: parse_srv63;
-        }
-    }
-*/
     state parse_udp_outer {
         packet.extract(hdr.udp);
         transition select (hdr.udp.dport){
@@ -208,26 +197,34 @@ control MyIngress (inout headers hdr,
                    inout metadata meta,
                    inout standard_metadata_t standard_metadata) {
 
-    /* to do: done: construir action build_srv63 no modo inline: 
-    -> segment_id1 será o endereço final <ipv6_outer.dst_addr>. -> s1 recebeu este valor
-    -> ipv6_outer.dst_addr será o primeiro ip da sid <s3>. -> feito
-    -> pegar exemplo de configuração de modo inline no linux -> feito
-    */
+    action drop() {
+        mark_to_drop();
+    }
+
+    action ipv6_forward (macAddr_t dstAddr, egressSpec_t port) {
+        standard_metadata.egress_spec = port;
+        hdr.ethernet.dstAddr = dstAddr;
+    }
+
     action build_srv63(ip6Addr_t s2, ip6Addr_t s3) {
-        /*hdr.srv63.setValid(); Já foi criado antes da netronome
-        hdr.srv63.next_hdr = hdr.ipv6_outer.next_hdr; foi realizado na criação
-        hdr.srv63.hdr_ext_len =  LEN; foi realizado na criação
-        hdr.srv63.routing_type = TYPE_SR; foi realizado na criação
-        hdr.srv63.segment_left = SL; foi realizado na criação*/
         hdr.srv63.last_entry = 2;
-        /*hdr.srv63.flags = 0;*/
-        hdr.srv63.tag = 1; /* para não entrar em loop*/
-        /*hdr.srv63.segment_id1 = hdr.ipv6_outer.dst_addr; não precisarie mexer*/
+        hdr.srv63.tag = 1;
         hdr.srv63.segment_id2 = s2;
         hdr.srv63.segment_id3 = s3;
-        /*hdr.ipv6_outer.next_hdr = TYPE_SRV6;*/
         hdr.ipv6_outer.dst_addr = s3;
-        /*hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len + 56;*/
+    }
+
+    table ipv6_outer_lpm {
+        key = {
+            hdr.ipv6_outer.dst_addr:exact;
+        }
+        actions = {
+            ipv6_forward;
+            drop;
+            NoAction;
+        }
+        size = 1024;
+        default_action = drop();
     }
 
     table teid_exact {
@@ -244,24 +241,14 @@ control MyIngress (inout headers hdr,
         }
         actions = {
             build_srv63;
-            /*srv6_pop;*/
         }
-        /*default_action = srv6_pop(64);*/
-        /*size = 1024;*/
     }
 
-
-
-    /* to do: done: configurar apply para chamar tabela my_sid se srv6 for válido e segment_left =0
-    exemplo em 5g srv6 bmv2 mininet */
-    
     apply {
         if (hdr.srv63.isValid() && hdr.srv63.segment_left == 2 && hdr.srv63.tag == 0){
             teid_exact.apply();
-        } /*else if (hdr.srv63.isValid() && hdr.srv63.segment_left == 0){
-            pop.apply();
         }
-        ipv6_outer_lpm.apply();*/
+        ipv6_outer_lpm.apply(); 
     }
 }
 /************************************************************************
@@ -271,44 +258,15 @@ control MyEgress(inout headers hdr,
                  inout metadata meta,
                  inout standard_metadata_t standard_metadata) {
 
-    action drop() {
-        mark_to_drop();
-    }
 
-    action ipv6_forward (macAddr_t dstAddr, egressSpec_t port) {
-        standard_metadata.egress_spec = port;
-        /*hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;*/
-        hdr.ethernet.dstAddr = dstAddr;
-    }
-
-    /* to do: done: construir função srv6_pop: 
-    -> setar como invalido o srv63 -> feito
-    -> alterar ipv6_outer.next_hdr para hdr.srvr63.next_hdr -> feito
-    -> alterar ipv6_outer.dst_addr para parametro recebido pela tabela -> não é necessário pois o ultimo host srv6 aware já faz isto
-    -> exemplo em 5g srv6 bmv2 mininet no github -> utilizei como base, mas foi bem diferente
-    */
     action srv6_pop (bit<8> hop) {
         hdr.ipv6_outer.next_hdr = hdr.srv63.next_hdr;
-        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56; /*cada sid tem 16bytes. são 3 sids + 8 bytes do header*/
+        hdr.ipv6_outer.payload_len = hdr.ipv6_outer.payload_len - 56;
         hdr.srv63.setInvalid();
         hdr.ipv6_outer.hop_limit = hop;
         hdr.gtp.spare = 1;
     }
 
-    table ipv6_outer_lpm {
-        key = {
-            hdr.ipv6_outer.dst_addr:exact;
-        }
-        actions = {
-            ipv6_forward;
-            drop;
-            NoAction;
-        }
-        size = 1024;
-        default_action = drop();
-    }
-
-    /* to do: done: construir tabela my_sid: se der match chama função srv6_pop que vai tirar o srv6 */
     table pop {
         key = {
             hdr.ipv6_outer.dst_addr:exact;
@@ -325,7 +283,6 @@ control MyEgress(inout headers hdr,
         if (hdr.srv63.isValid()) {
             pop.apply();
         }
-        ipv6_outer_lpm.apply();
     }
     
 }
