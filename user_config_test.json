@@ -1,0 +1,25 @@
+{
+"tables": {
+    "ingress::ipv6_outer_lpm": {
+        "rules": [
+        {
+            "name": "to_vf0_0",
+            "match": 
+                { "ipv6_outer.dst_addr" : { "value" : "fc00::1" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:00" 
+                    },
+                    "port": { 
+                        "value": "v0.0" 
+                    }
+                }
+            }
+        }
+        ]
+     }
+}
+
+}

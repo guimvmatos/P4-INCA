@@ -1,0 +1,267 @@
+{
+"tables": {
+    "ingress::ipv6_outer_lpm": {
+        "rules": [
+        {
+            "name": "to_vf0_0",
+            "match": 
+                { "ipv6_outer.dst_addr" : { "value" : "fc00::1" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:00" 
+                    },
+                    "port": { 
+                        "value": "v0.0" 
+                    }
+                }
+            }
+        },
+        {
+            "name": "to_vf0_1",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc00::2" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:01"
+		    },
+                    "port": { 
+                        "value": "v0.1" 
+                    }
+                }
+            }
+        },
+        {
+            "name": "to_vf0_1_srv6",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fcf0:12::100" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:01"
+		    },
+                    "port": { 
+                        "value": "v0.1" 
+                    }
+                }
+            }
+        },
+        {
+            "name": "to_vf0_2_srv6",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fcf0:23::6006" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:02"
+		    },
+                    "port": { 
+                        "value": "v0.2" 
+                    }
+                }
+            }
+        },
+        {
+            "name": "to_vf0_2_srv6",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fcf0:23::9009" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:03"
+		    },
+                    "port": { 
+                        "value": "v0.3" 
+                    }
+                }
+            }
+        },
+	{
+            "name": "to_vf0_2",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc00::3" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:02"
+		    },
+                    "port": { 
+                        "value": "v0.2" 
+                    }
+                }
+            }
+        },
+	{
+            "name": "to_vf0_3",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc00::4" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:03"
+		    },
+                    "port": { 
+                        "value": "v0.3" 
+                    }
+                }
+            }
+        },
+        {
+            "name": "to_vf0_4",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc00::5" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:04"
+		    },
+                    "port": { 
+                        "value": "v0.4" 
+                    }
+                }
+            }
+        },
+    {
+            "name": "to_vf0_5",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc00::8" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:05"
+		    },
+                    "port": { 
+                        "value": "v0.5" 
+                    }
+                }
+            }
+        },
+    {
+            "name": "to_vf0_6",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc00::9" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "00:15:4d:00:00:06"
+		    },
+                    "port": { 
+                        "value": "v0.6" 
+                    }
+                }
+            }
+        },
+    {
+            "name": "to_vf0_6_RAN",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc20::2" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "08:00:27:dd:dd:dd"
+		    },
+                    "port": { 
+                        "value": "v0.6" 
+                    }
+                }
+            }
+        },
+        {
+            "name": "to_vf0_5_UPF",
+            "match": 
+                { "ipv6_outer.dst_addr": { "value": "fc10::2" } },
+            "action": {
+                "type": "ingress::ipv6_forward",
+                "data": {
+                    "dstAddr": { 
+                        "value": "08:00:27:aa:aa:aa"
+		    },
+                    "port": { 
+                        "value": "v0.5" 
+                    }
+                }
+            }
+            }
+        ]
+     },
+     "ingress::teid_exact": {
+        "rules": [
+        {
+            "name": "clientNmap",
+            "match": 
+                { "gtp.teid" : { "value" : "33" } },
+            "action": {
+                "type": "ingress::build_srv63",
+                "data": {
+                    "s2": { 
+                        "value": "fcf0:23::9009" 
+                    },
+                    "s3": { 
+                        "value": "fcf0:12::100" 
+                    }
+                }
+            }
+        },
+        {
+            "name": "teid_32",
+            "match": 
+                { "gtp.teid" : { "value" : "32" } },
+            "action": {
+                "type": "ingress::build_srv63",
+                "data": {
+                    "s2": { 
+                        "value": "fcf0:23::6006" 
+                    },
+                    "s3": { 
+                        "value": "fcf0:12::100" 
+                    }
+                }
+            }
+        }
+        ]
+    },
+    "ingress::pop": {
+        "rules": [
+        {
+            "name": "sid_pop_to_UPF",
+            "match": 
+            { "ipv6_outer.dst_addr": { "value": "fc00::5" } },
+            "action": {
+                "type": "ingress::srv6_pop",
+                "data": {
+                    "hop": { 
+                        "value": "64" 
+                    }
+                }
+            }
+        },
+        {
+            "name": "sid_pop_to_RAN",
+            "match": 
+            { "ipv6_outer.dst_addr": { "value": "fc00::1" } },
+            "action": {
+                "type": "ingress::srv6_pop",
+                "data": {
+                    "hop": { 
+                        "value": "64" 
+                    }
+                }
+            }
+        }
+        ]
+    }
+}
+
+}
