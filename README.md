@@ -47,9 +47,45 @@ In the next works we will to make more tests with more functions and chainings, 
 ### Link to a DEMO Presentation published on 2021 P4 Workshop
 - https://www.youtube.com/watch?v=0BnOH88fgGU
 
-# Deployment
-
 This work is divided into three repositories:
 - P4-INCA: The main contribution. Here you can find the INCA P4 code for Netronome Agilio SmartNIC and its instructions to deploy it and configure.
 - [P4-BMv2-RAN-UPF](https://github.com/guimvmatos/P4-BMv2-RAN-UPF): Auxiliary P4 code to build a RAN and UPF on context of 5G simulations for INCA Project.
 - [SFC-SRv6-topology](https://github.com/guimvmatos/SFC-SRv6-topology): Repository with instructions to complete the construction of the necessary topology for INCA tests and simulations.
+
+
+# Deployment
+
+To reproduce these repositories, you'll need the following requirements:
+
+- Netronme Agilio SmartNIC
+- Vagrant
+- VirtualBox
+- Python
+
+Once you already have your netronome installed and configured on you machine, follow the steps:
+
+## Steps
+
+1. INCA
+First, you must configure your card to have at least 7 logical interfaces (VFs). You can configure this setting by editing the following file: `/lib/systemd/system/nfp-sdk6-rte.service`. locate and change the following line.
+
+`Environment=NUM_VFS=7 `
+
+Once this is done, proceed with the inca code P4. You have to clone this repository inside your source codes of netronome, generally its inside `path_for_agilio/src/p4-16`.
+
+```
+git clone git@github.com:guimvmatos/P4-INCA.git
+cd P4-INCA
+sudo /opt/netronome/p4/bin/./nfp4build --nfp4c_p4_version 16 --no-debug-info -p out -o firmware.nffw -l lithium -4 entryv2.p4
+sudo /opt/netronome/p4/bin/./rtecli design-load -f firmware.nffw -p out/pif_design.json
+```
+
+If you want, you can check the configured rules.
+```
+sudo /opt/netronome/p4/bin/./rtecli tables -i 0 list-rules
+```
+
+Now your netronome is configured with INCA. Let's proceed with configurations of RAN, UPF and others VMs.
+
+2. RAN / UPF
+
