@@ -1,4 +1,4 @@
-# In-Network IdentifiCation and chAining (INCA)
+# When SRv6 meets 5G Core: Implementation and Deployment of a Network Service Chaining Function in SmartNICs
 
 ## Abstract
 Currently, we have witnessed a myriad of solutions that benefit from programmable hardware. The 5G Core (5GC)can and should  also  benefit  from  such  paradigm  to  offload certain  functions  to  the  dataplane.  In  this  work,  we  designed and  implemented  a  P4-based  solution  for  traffic  identification and chaining using the Netronome Agilo SmartNIC. The solution here  presented  is  deployed  in-between  the  RAN  and  UPF  (UserPlane Function) so that traffic coming from the RAN is identified and chained using SRv6 based on different rules defined by the control  plane.  The  traffic  identification  and  the  construction  of the SRv6 list of segments are done entirely in the SmartNIC. A minimalist  Proof-of-Concept  (PoC)  was  deployed  and  evaluated to  show  that  this  function  is  perfectly  capable  to  build  service function  chainings  in  a  transparent  and  efficient  way.
