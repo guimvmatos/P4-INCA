@@ -46,3 +46,10 @@ In the next works we will to make more tests with more functions and chainings, 
 
 ### Link to a DEMO Presentation published on 2021 P4 Workshop
 - https://www.youtube.com/watch?v=0BnOH88fgGU
+
+# Deployment
+
+This work is divided into three repositories:
+- P4-INCA: The main contribution. Here you can find the INCA P4 code for Netronome Agilio SmartNIC and its instructions to deploy it and configure.
+- [P4-BMv2-RAN-UPF](https://github.com/guimvmatos/P4-BMv2-RAN-UPF): Auxiliary P4 code to build a RAN and UPF on context of 5G simulations for INCA Project.
+- [SFC-SRv6-topology](https://github.com/guimvmatos/SFC-SRv6-topology): Repository with instructions to complete the construction of the necessary topology for INCA tests and simulations.
