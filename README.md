@@ -69,7 +69,7 @@ Once you already have your netronome installed and configured on you machine, fo
 1. INCA
 First, you must configure your card to have at least 7 logical interfaces (VFs). You can configure this setting by editing the following file: `/lib/systemd/system/nfp-sdk6-rte.service`. locate and change the following line.
 
-`Environment=NUM_VFS=7 `
+`Environment=NUM_VFS=7`
 
 Once this is done, proceed with the inca code P4. You have to clone this repository inside your source codes of netronome, generally its inside `path_for_agilio/src/p4-16`.
 
@@ -88,4 +88,15 @@ sudo /opt/netronome/p4/bin/./rtecli tables -i 0 list-rules
 Now your netronome is configured with INCA. Let's proceed with configurations of RAN, UPF and others VMs.
 
 2. RAN / UPF
+
+Follow the instructions of [P4-BMv2-RAN-UPF Repository](https://github.com/guimvmatos/P4-BMv2-RAN-UPF)
+
+After this, you'll have two VMs running and linked with INCA.
+
+3. VFs topology
+
+Follow the instructions of [SFCSRv6--topology](https://github.com/guimvmatos/SFCSRv6--topology)
+
+
+Now, you have all topology running. You can ping from clientVlc to dashServer with `ping6 fc20::2`. You can capture the packets passing through NFVs with tcpdump.
 
