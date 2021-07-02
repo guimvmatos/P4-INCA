@@ -95,7 +95,7 @@ After this, you'll have two VMs running and linked with INCA.
 
 3. VFs topology
 
-Follow the instructions of [SFCSRv6--topology](https://github.com/guimvmatos/SFCSRv6--topology)
+Follow the instructions of [SFC-SRv6-topology](https://github.com/guimvmatos/SFC-SRv6-topology)
 
 
 Now, you have all topology running. You can ping from clientVlc to dashServer with `ping6 fc20::2`. You can capture the packets passing through NFVs with tcpdump.
