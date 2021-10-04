@@ -233,7 +233,7 @@ control MyIngress (inout headers hdr,
         default_action = drop();
     }
 
-    table teid_exact {
+    table main {
         key = {
             hdr.gtp.teid: ternary;
             hdr.pdu_container.qosid: ternary;
@@ -250,6 +250,7 @@ control MyIngress (inout headers hdr,
             srv6_pop;
         }
         default_action = srv6_pop(64);
+        /*size = 1024;*/
     }
 
     table pop {
